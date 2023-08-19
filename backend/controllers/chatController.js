@@ -138,3 +138,36 @@ export const createGroupChat = catchAsyncError(async (req, res, next) => {
         throw new Error(error.message);
     }
 });
+
+
+export const renameGroup = catchAsyncError(async (req, res, next) => {
+    try {
+        const { chatId, chatName } = req.body;
+
+        const filter = { _id: chatId };
+
+        const updatedChatName = await chatModel.findOneAndUpdate(
+            filter,
+            { chatName },
+            { new: true }
+        )
+            .populate("users", "-password")
+            .populate("groupAdmin", "-password");
+
+        if (!updatedChatName) {
+            return next(new errorHandlerClass("Chat not found", 400));
+        }
+
+        res.status(200).json({
+            success: true,
+            updatedChatName,
+        });
+
+    } catch (error) {
+        next(new errorHandlerClass("Failed to rename group chat", 400));
+    }
+});
+
+
+
+
