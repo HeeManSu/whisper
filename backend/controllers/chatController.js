@@ -168,6 +168,90 @@ export const renameGroup = catchAsyncError(async (req, res, next) => {
     }
 });
 
+export const addToGroup = catchAsyncError(async (req, res, next) => {
+
+
+    try {
+        const { chatId, userId } = req.body;
+
+        const chat = await chatModel.findById(chatId); // Get the chat details
+        if (!chat) {
+            return next(new errorHandlerClass("Chat does not exist", 400));
+        }
+
+        const existingUserIndex = chat.users.findIndex(user => user.toString() === userId);
+        if (existingUserIndex !== -1) {
+            return next(new errorHandlerClass("User already exists in the group", 400));
+        }
+
+        const added = await chatModel.findOneAndUpdate(
+            { _id: chatId }, // Use filter object
+            { $push: { users: userId } },
+            { new: true }
+        )
+            .populate("users", "-password")
+            .populate("groupAdmin", "-password");
+
+        if (!added) {
+            return next(new errorHandlerClass("Chat does not exist ", 400));
+        }
+        res.status(200).json({
+            success: true,
+            added,
+        });
+
+
+    } catch (error) {
+        next(new errorHandlerClass("Failed to add new person to group chat", 400));
+    }
+
+})
+
+
+export const removeFromGroup = catchAsyncError(async (req, res, next) => {
+
+
+    try {
+
+
+        const { chatId, userId } = req.body;
+
+        const chat = await chatModel.findById(chatId); // Get the chat details
+        if (!chat) {
+            return next(new errorHandlerClass("Chat does not exist", 400));
+        }
+
+        const existingUserIndex = chat.users.findIndex(user => user.toString() === userId);
+        if (existingUserIndex === -1) {
+            return next(new errorHandlerClass("User not found in the group", 400));
+        }
+
+        const removed = await chatModel.findOneAndUpdate(
+            { _id: chatId }, // Use filter object
+            { $pull: { users: userId } },
+            { new: true }
+        )
+            .populate("users", "-password")
+            .populate("groupAdmin", "-password");
+
+        if (!removed) {
+            return next(new errorHandlerClass("Chat does not exist ", 400));
+        }
+        res.status(200).json({
+            success: true,
+            removed,
+        });
+
+
+    } catch (error) {
+        next(new errorHandlerClass("Failed to remove person from group chat", 400));
+
+    }
+
+})
+
+
+
 
 
 
