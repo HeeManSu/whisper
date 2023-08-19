@@ -2,9 +2,9 @@ import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import chatModel from "../models/chatModel.js";
 import personChatModel from "../models/personChatModel.js";
 import userModel from "../models/userModel.js";
+import getDataUri from "../utils/dataUri.js";
 import errorHandlerClass from "../utils/errorClass.js";
-
-
+import { v2 as cloudinary } from 'cloudinary'
 
 export const getAllPersonChats = catchAsyncError(async (req, res, next) => {
     try {
@@ -71,7 +71,6 @@ export const createPersonChat = catchAsyncError(async (req, res, next) => {
 
     try {
         const newChat = await chatModel.create(chatData);
-
         const fullChat = await chatModel.findOne({ _id: newChat._id }).populate("users", "-password");
         res.status(200).json({
             success: true,
@@ -82,82 +81,60 @@ export const createPersonChat = catchAsyncError(async (req, res, next) => {
     }
 });
 
-// export const chatDetails = catchAsyncError(async (req, res, next) => {
-//     const chatId = req.params.id;
+export const createGroupChat = catchAsyncError(async (req, res, next) => {
 
-//     const chat = await chatModel.findById(chatId);
+    const { name, users } = req.body;
+    const file = req.file;
 
-//     if (!chat) {
-//         return next(new errorHandlerClass("Chat not found", 400))
+    console.log(name)
+    console.log(users)
+    console.log(file)
 
-//     }
+    if (!name || !users || !file) {
+        return next(new errorHandlerClass("Please Enter all Fields", 400));
+        // throw error.message; 
+    }
+    var parsedUsers = JSON.parse(req.body.users);
 
-//     res.status(200).json({
-//         success: true,
-//         chat,
-//     })
-// })
+    if (parsedUsers.length < 2) {
+        return next(new errorHandlerClass("add more than 2 users", 400));
+    }
 
+    parsedUsers.push(req.user);
 
-// export const deleteChat = catchAsyncError(async (req, res, next) => {
-//     const chatId = req.params.id;
-
-//     const deletedChat = await chatModel.findByIdAndRemove(chatId);
-
-//     if (!deletedChat) {
-//         return next(new errorHandlerClass("Chat not found", 400))
-
-//     }
-
-//     res.status(200).json({
-//         success: true,
-//         message: "Chat deleted successfully",
-//     })
-// })
-
-// export const createGroupChat = catchAsyncError(async (req, res, next) => {
+    //upload files on cloudinary
+    const fileUri = getDataUri(file);
+    // const mycloud = await cloudinary.v2.uploader(fileUri.content)
 
 
-//     const { name, users } = req.body;
-//     const userId = req.user._id;
-//     console.log(name)
-//     console.log(users)
-//     console.log(userId)
-
-//     // var users = JSON.parse(req.body.users);
-
-//     if (!name || !users) {
-//         return next(new errorHandlerClass("Please Enter all Fields", 400))
-//     }
-
-//     if (users.length < 2) {
-//         return next(new errorHandlerClass("More than 2 person needed in the group", 400))
-//     }
-
-    // const existingUsers = await userModel.findById({ _id: { $in: users } });
-    // if (existingUsers.length !== users.length) {
-    //     return next(new errorHandlerClass("Invalid user IDs in the users array", 400))
-    // }
+    try {
+        const myCloud = await cloudinary.uploader.upload(fileUri.content)
 
 
-//     const chat = new chatModel({
-//         chatName: name,
-//         users,
-//         groupChat: true,
-//         groupAdmin: userId,
-//         sentTime: Date.now(),
-//         status: "unseen",
-//         avatar: {
-//             public_id: "d500037df26394e7067e7a0670116561",
-//             url: "https://asset.cloudinary.com/dnkl6onms/d500037df26394e7067e7a0670116561",
-//         }
-//     })
-//     await chat.save();
-//     res.status(200).json({
-//         success: true,
-//         chat,
-//     })
+        // console.log(fileUri)
+        console.log(myCloud)
 
+        const groupChat = await chatModel.create({
+            chatName: name,
+            users: parsedUsers,
+            isGroupChat: true,
+            groupAdmin: req.user,
+            avatar: {
+                public_id: myCloud.public_id,
+                url: myCloud.secure_url,
+            }
+        });
+        console.log(groupChat)
 
+        const fullGroupChat = await chatModel.findOne({ _id: groupChat._id })
+            .populate("users", "-password")
+            .populate("groupAdmin", "-password");
 
-// })
+        res.status(200).json({
+            success: true,
+            newChat: fullGroupChat
+        });
+    } catch (error) {
+        throw new Error(error.message);
+    }
+});

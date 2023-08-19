@@ -15,7 +15,7 @@ export const register = catchAsyncError(async (req, res, next) => {
 
 
     if (!name || !email || !password || !file || !username) {
-        return next(new errorClass("Please enter all field", 400))
+        return next(new errorHandlerClass("Please enter all field", 400))
     }
 
     let user = await userModel.findOne({ $or: [{ email }, { username }] });
