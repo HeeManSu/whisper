@@ -170,7 +170,12 @@ export const searchUser = catchAsyncError(async (req, res, next) => {
         ]
     } : {};
 
-    const users =  await userModel.find(keyword).find({_id: { $ne: req.user._id}})
+    const users = await userModel.find({
+        $and: [
+            keyword,
+            { _id: { $ne: req.user._id } }
+        ]
+    });
 
     res.status(200).json({
         success: true,

@@ -72,14 +72,16 @@ export const logout = () => async dispatch => {
 };
 
 
-export const searchUser = () => async dispatch => {
+export const searchUser = (search) => async (dispatch) => {
     try {
         dispatch({ type: 'searchUserRequest' });
 
         const { data } = await axios.get(`${server}/searchuser`, {
+            params: { search }, // Pass the search query as a parameter
             withCredentials: true,
         });
-        dispatch({ type: 'searchUserSuccess', payload: data.user });
+
+        dispatch({ type: 'searchUserSuccess', payload: data.users }); // Use "data.users" for the payload
     } catch (error) {
         dispatch({ type: 'searchUserFail', payload: error.response.data.message });
     }

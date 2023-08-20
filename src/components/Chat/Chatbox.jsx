@@ -1,19 +1,19 @@
-import React from 'react'
 import { FiPlusCircle } from "react-icons/fi"
-import { Avatar, useDisclosure } from '@chakra-ui/react'
+import {  useDisclosure } from '@chakra-ui/react'
 // import { messagesPeoples } from '../../utils/data'
 import { BsCheck2All } from "react-icons/bs"
-import NewPersonModal from './NewpersonModal'
-import { useSelector } from 'react-redux'
+
+
+import React, { useEffect, useState } from 'react';
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton } from "@chakra-ui/react";
+import { Input, Button } from '@chakra-ui/react';
+import { useDispatch, useSelector } from 'react-redux';
+import { searchUser } from '../../redux/actions/user';
 
 
 const Chatbox = ({ chatype }) => {
 
   const { isOpen: isPersonModalOpen, onClose: PersonModalClose, onOpen: PersonModalOpen } = useDisclosure();
-
-  const { personChats } = useSelector(state => state.chats);
-  // console.log(personChats)
-
 
   return (
     <div className='bg-white rounded-xl shadow1'>
@@ -23,41 +23,13 @@ const Chatbox = ({ chatype }) => {
 
           <button onClick={PersonModalOpen}>
             <FiPlusCircle className='h-[28px] w-[28px] relative top-[5px]' />
-            <NewPersonModal isPersonModalOpen={isPersonModalOpen} PersonModalClose={PersonModalClose} />
+          
           </button>
-
+          <NewChatModal isPersonModalOpen={isPersonModalOpen} PersonModalClose={PersonModalClose} />
         </div>
 
         <div className={`${chatype == "People" ? 'max-h-[260px]' : 'max-h-[192px]'} overflow-x-hidden overflow-y-auto scrollbar-hidden`}>
-        
-          {personChats.map((person, index) => (
-            // console.log(person.avatar),
-            <div key={index}>
-              <div className='flex justify-between' >
-                <div className='flex gap-7'>
-                  <Avatar css={{ width: "47px", height: "47px" }} src={person.avatar} />
-                
-                  <div className='flex flex-col'>
-                    <h1 className='text-[17px] text-[#303030] font-semibold'>{person.chatName}</h1>
-                    <h1 className='text-[15px] relative bottom-[5px] text-[#303030] font-normal'>{person.latestMessage}</h1>
-                  </div>
-                </div>
-                <div className='pl-3'>
-                  <span className='text-[14px] text-[#303030] font-[400]'>{person.chatName}</span>
-
-                  <BsCheck2All fontWeight='600' className={`text-[20px] relative left-4  ${person.status == "seen" ? 'text-blue-600' : ''}`} />
-                </div>
-              </div>
-
-              <div className='w-[95%] mb-[10px] mx-auto border bg-opacity-[66%] mt-2 bg-[#B4ABAB]'>
-
-              </div>
-            </div>
-
-          ))}
-
         </div>
-
       </div>
     </div >
   )
@@ -66,45 +38,45 @@ const Chatbox = ({ chatype }) => {
 export default Chatbox
 
 
-  // < div className = 'bg-white rounded-xl shadow1' >
-  //   <div className='px-5 pt-4'>
-  //     <div className='flex  pb-4 justify-between'>
-  //       <h1 className='text-[25px] font-[600]'>{chatype}</h1>
+const NewChatModal = ({ isPersonModalOpen, PersonModalClose }) => {
+  const [username, setUsername] = useState("");
+  const dispatch = useDispatch();
+  const { users } = useSelector(state => state.user);
+  console.log(users);
 
-  //       <button onClick={PersonModalOpen}>
-  //         <FiPlusCircle className='h-[28px] w-[28px] relative top-[5px]' />
-  //         <NewPersonModal isPersonModalOpen={isPersonModalOpen} PersonModalClose={PersonModalClose} />
-  //       </button>
+  useEffect(() => {
+    if (username) {
+      dispatch(searchUser(username));
+    }
+  }, [username]);
 
-  //     </div>
-
-  //     <div className={`${chatype == "People" ? 'max-h-[260px]' : 'max-h-[192px]'} overflow-x-hidden overflow-y-auto scrollbar-hidden`}>
-  //       {data.map((person, index) => (
-
-  //         <div key={index}>
-  //           <div className='flex justify-between' >
-  //             <div className='flex gap-7'>
-  //               <Avatar css={{ width: "47px", height: "47px" }} src={person.avatar} />
-  //               <div className='flex flex-col'>
-  //                 <h1 className='text-[17px] text-[#303030] font-semibold'>{person.chatName}</h1>
-  //                 <h1 className='text-[15px] relative bottom-[5px] text-[#303030] font-normal'>{person.latestMessage}</h1>
-  //               </div>
-  //             </div>
-  //             <div className='pl-3'>
-  //               <span className='text-[14px] text-[#303030] font-[400]'>{person.sentTime}</span>
-
-  //               <BsCheck2All fontWeight='600' className={`text-[20px] relative left-4  ${person.status == "seen" ? 'text-blue-600' : ''}`} />
-  //             </div>
-  //           </div>
-
-  //           <div className='w-[95%] mb-[10px] mx-auto border bg-opacity-[66%] mt-2 bg-[#B4ABAB]'>
-
-  //           </div>
-  //         </div>
-
-  //       ))}
-
-  //     </div>
-
-  //   </div>
-  //   </ >
+  return (
+    <div>
+      <Modal size={'sm'} isOpen={isPersonModalOpen} onClose={PersonModalClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>New Chat</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <div className='flex flex-col items-center'>
+              <Input
+                required
+                id='username'
+                name='username'
+                type='text'
+                placeholder='Enter a username'
+                value={username}
+                onChange={(e) => setUsername(e.target.value)} 
+              />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={PersonModalClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </div>
+  );
+}

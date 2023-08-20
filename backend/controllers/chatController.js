@@ -143,9 +143,7 @@ export const createGroupChat = catchAsyncError(async (req, res, next) => {
 export const renameGroup = catchAsyncError(async (req, res, next) => {
     try {
         const { chatId, chatName } = req.body;
-
         const filter = { _id: chatId };
-
         const updatedChatName = await chatModel.findOneAndUpdate(
             filter,
             { chatName },
@@ -209,23 +207,16 @@ export const addToGroup = catchAsyncError(async (req, res, next) => {
 
 
 export const removeFromGroup = catchAsyncError(async (req, res, next) => {
-
-
     try {
-
-
         const { chatId, userId } = req.body;
-
         const chat = await chatModel.findById(chatId); // Get the chat details
         if (!chat) {
             return next(new errorHandlerClass("Chat does not exist", 400));
         }
-
         const existingUserIndex = chat.users.findIndex(user => user.toString() === userId);
         if (existingUserIndex === -1) {
             return next(new errorHandlerClass("User not found in the group", 400));
         }
-
         const removed = await chatModel.findOneAndUpdate(
             { _id: chatId }, // Use filter object
             { $pull: { users: userId } },
@@ -241,13 +232,10 @@ export const removeFromGroup = catchAsyncError(async (req, res, next) => {
             success: true,
             removed,
         });
-
-
     } catch (error) {
         next(new errorHandlerClass("Failed to remove person from group chat", 400));
 
     }
-
 })
 
 

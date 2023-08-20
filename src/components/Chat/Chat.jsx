@@ -23,11 +23,6 @@ const Chat = () => {
   const [activeNotification, setActiveNotification] = useState(false);
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
-  // console.log(search);
-  // const { personChats } = useSelector(state => state.chats);
-  // const { user } = useSelector(state => state.user);
-  // console.log(personChats)
-
 
   const { isOpen: isProfileOpen, onClose: ProfileClose, onOpen: ProfileOpen } = useDisclosure();
   const { isOpen: isNotificationOpen, onClose: NotificationClose, onOpen: NotificationOpen } = useDisclosure();
@@ -41,9 +36,10 @@ const Chat = () => {
     setActiveChat(true); // Set activeChat to true when component mounts
   }, []);
 
-  useEffect(() => {
-    dispatch(getAllPersonChats())
-  }, [dispatch])
+
+  // useEffect(() => {
+  //   dispatch(getAllPersonChats())
+  // }, [dispatch])
 
   const handleSearch = (event) => {
     setSearch(event.target.value)
@@ -66,16 +62,6 @@ const Chat = () => {
     dispatch(logout());
     navigate("/");
   }
-
-  // const currentDate = new Date();
-  // const currentHours = currentDate.getHours();
-  // const currentMinutes = currentDate.getMinutes();
-  // const currentSeconds = currentDate.getSeconds();
-
-  // // Format the time as a string
-  // const currentTime = `${currentHours}:${currentMinutes}:${currentSeconds}`;
-
-  // console.log(currentTime);
 
   return (
     <div className='bg-[#DFECF4]'>
@@ -164,9 +150,9 @@ const Chat = () => {
               <Chatbox chatype="People"  />
 
             </div>
-            {/* <div>
-              <Chatbox chatype="Groups" data={searchResult.length > 0 ? searchResult : messagesGroups} />
-            </div> */}
+            <div>
+              {/* <Chatbox chatype="Groups" data={searchResult.length > 0 ? searchResult : messagesGroups} /> */}
+            </div>
           </div>
 
         </div>

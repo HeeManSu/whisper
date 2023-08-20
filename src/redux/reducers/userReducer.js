@@ -52,15 +52,12 @@ export const userReducer = createReducer({}, {
     },
     searchUserSuccess: (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.users = action.payload;
     },
     searchUserFail: (state, action) => {
         state.loading = false;
         state.error = action.payload;
     },
-
-
-
     loadUserRequest: state => {
         state.loading = true;
     },
