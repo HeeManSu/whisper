@@ -1,5 +1,46 @@
-import { createReducer } from "@reduxjs/toolkit";
+import { createAsyncThunk, createReducer, createSlice } from "@reduxjs/toolkit";
 
+export const searchUser = createAsyncThunk('searchUsers', async (search) => {
+    try {
+        // dispatch({ type: 'searchUserRequest' });
+
+        const { data } = await axios.get(`${server}/searchuser`, {
+            params: { search }, // Pass the search query as a parameter
+            withCredentials: true,
+        });
+        console.log(data.users);
+
+        // dispatch({ type: 'searchUserSuccess', payload: data.users }); // Use "data.users" for the payload
+        return data.users;
+    } catch (error) {
+        // dispatch({ type: 'searchUserFail', payload: error.response.data.message });
+        throw new Error(error)
+    }
+});
+
+export const searchSlice = createSlice({
+    name: "search",
+    initialState: {
+        loading: false,
+        isAuthenticated: true,
+        users: null,
+        message: null,
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder.addCase(searchUser.pending, (state, action) => {
+            state.loading = true;
+        });
+        builder.addCase(searchUser.fulfilled, (state, action) => {
+            state.loading = false;
+            state.users = action.payload;
+        });
+        builder.addCase(searchUser.rejected, (state, action) => {
+            state.loading = false;
+            state.message = action.error;
+        });
+    }
+})
 
 export const userReducer = createReducer({}, {
     loginRequest: state => {

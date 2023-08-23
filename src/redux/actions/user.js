@@ -1,3 +1,4 @@
+import { createAsyncThunk } from "@reduxjs/toolkit";
 import { server } from "../store";
 import axios from "axios";
 
@@ -72,17 +73,20 @@ export const logout = () => async dispatch => {
 };
 
 
-export const searchUser = (search) => async (dispatch) => {
+export const searchUser = createAsyncThunk('searchUsers', async (search) => {
     try {
-        dispatch({ type: 'searchUserRequest' });
+        // dispatch({ type: 'searchUserRequest' });
 
         const { data } = await axios.get(`${server}/searchuser`, {
             params: { search }, // Pass the search query as a parameter
             withCredentials: true,
         });
+        console.log(data.users);
 
-        dispatch({ type: 'searchUserSuccess', payload: data.users }); // Use "data.users" for the payload
+        // dispatch({ type: 'searchUserSuccess', payload: data.users }); // Use "data.users" for the payload
+        return data.users;
     } catch (error) {
-        dispatch({ type: 'searchUserFail', payload: error.response.data.message });
+        // dispatch({ type: 'searchUserFail', payload: error.response.data.message });
+        throw new Error(error)
     }
-};
+});

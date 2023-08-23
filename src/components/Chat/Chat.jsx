@@ -89,8 +89,6 @@ const Chat = () => {
               }} className={`flex items-center h-[60px]   ${activeChat ? "bg-[#612DD1] border-r-[6px] border-[#F3B559]" : ""}`}>
                 <img className='w-44 h-[34px] flex items-center relative left-1' src={chat} alt="no-image" />
               </div>
-
-
               <button onClick={() => {
                 NotificationOpen();
                 setActiveNotification(true);
@@ -99,7 +97,6 @@ const Chat = () => {
               }} >
                 <div className={`flex items-center h-[60px]   ${activeNotification ? "bg-[#612DD1] border-r-[6px] border-[#F3B559]" : ""}`}>
                   <img className='w-44 h-[45px]' src={notification} alt="no-image" />
-
                 </div>
 
                 <Modal isOpen={isNotificationOpen} onClose={NotificationClose}>
@@ -131,10 +128,8 @@ const Chat = () => {
 
                 <Settings isSettingOpen={isSettingOpen} SettingClose={SettingClose} />
               </button>
-
             </div>
           </div>
-
           <button onClick={logoutHandler}>
             <img className='h-[42px] w-[42px]' src={logoutImage} alt="" />
           </button>
@@ -146,8 +141,8 @@ const Chat = () => {
             </div>
             <div>
 
-              
-              <Chatbox chatype="People"  />
+
+              <Chatbox />
 
             </div>
             <div>
