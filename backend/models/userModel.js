@@ -50,10 +50,10 @@ const userSchema = new Schema({
         required: true,
     },
 
-    isActive: {
-        type: Boolean,
-        default: false,
-    },
+    // isActive: {
+    //     type: Boolean,
+    //     default: false,
+    // },
     resetPasswordToken: String,
     resetPasswordExpire: {
         type: Date,
@@ -64,8 +64,8 @@ const userSchema = new Schema({
 //userSchema.pre("save") It mean before saving hash the password.
 
 
-userSchema.pre("save", async function  (next) {
-    if (!this.isModified("password")) return  next();
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) return next();
     this.password = await bcrypt.hash(this.password, 10);
     next();
 });

@@ -41,7 +41,7 @@ export const createPersonChat = catchAsyncError(async (req, res, next) => {
     }
 
     // Check if chat already exists
-    const isChat = await chatModel.findOne({
+    const existingChat = await chatModel.findOne({
         isGroupChat: false,
         users: { $all: [userId, secondUserId] },
     })
@@ -51,10 +51,11 @@ export const createPersonChat = catchAsyncError(async (req, res, next) => {
             populate: { path: 'sender', select: 'name pic email' },
         });
 
-    if (isChat) {
+    if (existingChat) {
         return res.status(200).json({
             success: true,
-            chat: isChat,
+            message: "Chat with this person already exists",
+            chat: existingChat,
         });
     }
 
@@ -72,14 +73,17 @@ export const createPersonChat = catchAsyncError(async (req, res, next) => {
     try {
         const newChat = await chatModel.create(chatData);
         const fullChat = await chatModel.findOne({ _id: newChat._id }).populate("users", "-password");
+
         res.status(200).json({
             success: true,
+            message: "New Chat Created successfully",
             chat: fullChat,
-        });
+        })
     } catch (error) {
         next(new errorHandlerClass("Failed to create new chat", 400));
     }
 });
+
 
 export const createGroupChat = catchAsyncError(async (req, res, next) => {
 

@@ -8,8 +8,8 @@ const router = express.Router();
 
 
 //Get request to fetch all chats and post to create one to one chat
-router.route("/personchat").get(isAuthenticated, getAllPersonChats).post(isAuthenticated, createPersonChat)
-
+router.route("/personchat").get(isAuthenticated, getAllPersonChats);
+router.route("/personchat").post(isAuthenticated, createPersonChat);
 //Get details of a specific chat. Delete particular chat. 
 // router.route("/personchat").get(isAuthenticated, )
 

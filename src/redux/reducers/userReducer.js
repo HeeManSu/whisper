@@ -1,5 +1,6 @@
 import { createAsyncThunk, createReducer, createSlice } from "@reduxjs/toolkit";
 
+
 export const searchUser = createAsyncThunk('searchUsers', async (search) => {
     try {
         // dispatch({ type: 'searchUserRequest' });
@@ -24,7 +25,7 @@ export const searchSlice = createSlice({
         loading: false,
         isAuthenticated: true,
         users: null,
-        message: null,
+        error: null,
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -37,7 +38,7 @@ export const searchSlice = createSlice({
         });
         builder.addCase(searchUser.rejected, (state, action) => {
             state.loading = false;
-            state.message = action.error;
+            state.error = action.error;
         });
     }
 })

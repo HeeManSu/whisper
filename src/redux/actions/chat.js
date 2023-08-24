@@ -22,21 +22,28 @@ export const getAllPersonChats = (username = "") => async dispatch => {
 }
 
 
-export const createPersonChat = () => async dispatch => {
+export const createPersonChat = (secondUserId) => async dispatch => {
     try {
-
         const config = {
             withCredentials: true,
         };
         dispatch({ type: 'newPersonChatRequest' });
 
         const { data } = await axios.post(
-            `${server}/personchat`, config
+            `${server}/personchat`, 
+            { secondUserId },
+            config
 
         );
+        console.log(data)
 
-        dispatch({ type: 'newPersonChatSuccess', payload: data.chat });
-    } catch (error) {
+        dispatch({
+            type: 'newPersonChatSuccess',
+            payload: {
+                chat: data.chat,
+                message: data.message
+            }
+        });    } catch (error) {
         dispatch({ type: 'newPersonChatFail', payload: error.response.data.message });
     }
 }
