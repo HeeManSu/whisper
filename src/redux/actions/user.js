@@ -16,6 +16,10 @@ export const login = (username, password) => async dispatch => {
             withCredentials: true,
         }
         );
+        const user = data.user;
+        // console.log(user);
+
+        localStorage.setItem("userInfo", JSON.stringify(user));
 
         dispatch({ type: 'loginSuccess', payload: data });
     } catch (error) {
@@ -81,7 +85,7 @@ export const searchUser = createAsyncThunk('searchUsers', async (search) => {
             params: { search }, // Pass the search query as a parameter
             withCredentials: true,
         });
-        console.log(data.users);
+        // console.log(data.users);
 
         // dispatch({ type: 'searchUserSuccess', payload: data.users }); // Use "data.users" for the payload
         return data.users;

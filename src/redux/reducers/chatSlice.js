@@ -3,7 +3,6 @@ import axios from "axios";
 import { server } from "../store";
 
 
-
 export const createNewChat = createAsyncThunk(
     'createNewChat',
     async (secondUserId) => {
@@ -15,10 +14,7 @@ export const createNewChat = createAsyncThunk(
                     withCredentials: true
                 }
             );
-            // console.log(response.data.message); // Check this line for the message property
-            // console.log(response.data.chat);    // Check this line for the chat property
-
-            return response.data; // Return the entire response data object
+            return response.data;
 
         } catch (error) {
             throw new Error(error);
@@ -26,6 +22,19 @@ export const createNewChat = createAsyncThunk(
     }
 );
 
+export const fetchAllChats = createAsyncThunk('fetchAllChat', async () => {
+    try {
+        const response = await axios.get(`${server}/personchat`,
+            {
+                withCredentials: true
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        throw new Error(error);
+    }
+})
 
 
 export const chatSlice = createSlice({
@@ -35,6 +44,7 @@ export const chatSlice = createSlice({
         loading: false,
         error: null,
         message: null,
+        chats: null,
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -51,6 +61,17 @@ export const chatSlice = createSlice({
             .addCase(createNewChat.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
-            });
+            })
+            .addCase(fetchAllChats.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchAllChats.fulfilled, (state, action) => {
+                state.loading = false;
+                state.chats = action.payload.chats;
+            })
+            .addCase(fetchAllChats.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
     }
 })

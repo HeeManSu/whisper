@@ -35,7 +35,7 @@ export const createPersonChat = (secondUserId) => async dispatch => {
             config
 
         );
-        console.log(data)
+        // console.log(data)
 
         dispatch({
             type: 'newPersonChatSuccess',

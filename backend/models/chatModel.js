@@ -36,7 +36,6 @@ const chatSchema = new Schema({
         public_id: {
             type: String,
             required: true,
-
         },
         url: {
             type: String,
@@ -47,11 +46,8 @@ const chatSchema = new Schema({
     {
         timestamps: true,
     }
-
 )
-
 export default mongoose.model('Chat', chatSchema);
-
 
 //name
 //group chat

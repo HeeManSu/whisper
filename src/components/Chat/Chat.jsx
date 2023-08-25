@@ -15,6 +15,7 @@ import { FiSearch } from "react-icons/fi"
 import Chatbox from './Chatbox'
 import { messagesGroups, messagesPeoples } from '../../utils/data'
 import { getAllPersonChats } from '../../redux/actions/chat'
+import GroupChatBox from './GroupChatBox'
 
 
 const Chat = () => {
@@ -147,6 +148,7 @@ const Chat = () => {
             </div>
             <div>
               {/* <Chatbox chatype="Groups" data={searchResult.length > 0 ? searchResult : messagesGroups} /> */}
+              <GroupChatBox />
             </div>
           </div>
 

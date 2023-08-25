@@ -43,3 +43,7 @@
 .scrollbar-hidden::-webkit-scrollbar {
   display: none;
 }
+
+.textColor1 {
+  color: rgba(255, 255, 255, 0.50);
+}

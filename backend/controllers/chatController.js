@@ -1,6 +1,5 @@
 import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import chatModel from "../models/chatModel.js";
-import personChatModel from "../models/personChatModel.js";
 import userModel from "../models/userModel.js";
 import getDataUri from "../utils/dataUri.js";
 import errorHandlerClass from "../utils/errorClass.js";
@@ -59,9 +58,8 @@ export const createPersonChat = catchAsyncError(async (req, res, next) => {
         });
     }
 
-    // Create a new chat
     const chatData = {
-        chatName: "sender",
+        chatName: secondUser.name, 
         isGroupChat: false,
         users: [userId, secondUserId],
         avatar: {
@@ -69,7 +67,6 @@ export const createPersonChat = catchAsyncError(async (req, res, next) => {
             url: secondUser.avatar.url,
         },
     };
-
     try {
         const newChat = await chatModel.create(chatData);
         const fullChat = await chatModel.findOne({ _id: newChat._id }).populate("users", "-password");
@@ -90,9 +87,9 @@ export const createGroupChat = catchAsyncError(async (req, res, next) => {
     const { name, users } = req.body;
     const file = req.file;
 
-    console.log(name)
-    console.log(users)
-    console.log(file)
+    // console.log(name)
+    // console.log(users)
+    // console.log(file)
 
     if (!name || !users || !file) {
         return next(new errorHandlerClass("Please Enter all Fields", 400));
@@ -116,7 +113,7 @@ export const createGroupChat = catchAsyncError(async (req, res, next) => {
 
 
         // console.log(fileUri)
-        console.log(myCloud)
+        // console.log(myCloud)
 
         const groupChat = await chatModel.create({
             chatName: name,
@@ -128,7 +125,7 @@ export const createGroupChat = catchAsyncError(async (req, res, next) => {
                 url: myCloud.secure_url,
             }
         });
-        console.log(groupChat)
+        // console.log(groupChat)
 
         const fullGroupChat = await chatModel.findOne({ _id: groupChat._id })
             .populate("users", "-password")
