@@ -92,8 +92,13 @@ export const chatSlice = createSlice({
         // error: null,
         // message: null,
         // chats: null,
+        activeChat: null,
     },
-    reducers: {},
+    reducers: {
+        updateActiveChat: (state, action) => {
+            return { ...state, activeChat: action.payload.activeChat };
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(createNewChat.pending, (state) => {
@@ -158,3 +163,7 @@ export const chatSlice = createSlice({
             })
     }
 })
+
+export const { updateActiveChat } = chatSlice.actions;
+
+export default chatSlice.reducer;

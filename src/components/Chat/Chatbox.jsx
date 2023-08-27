@@ -8,18 +8,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import { searchUser } from '../../redux/actions/user';
 import { createNewChat, fetchAllChats } from "../../redux/reducers/chatSlice";
 import toast from 'react-hot-toast'
-import { useEffect } from "react";
+import { useEffect, } from "react";
 import Loader from "../Loader/Loader";
-
+import { updateActiveChat } from "../../redux/reducers/chatSlice"
 
 
 const Chatbox = () => {
   const { isOpen: isPersonModalOpen, onClose: PersonModalClose, onOpen: PersonModalOpen } = useDisclosure();
   const [username, setUsername] = useState("");
   const [currentUser, setCurrentUser] = useState();
+
+ 
   const dispatch = useDispatch();
   const { users, loading } = useSelector(state => state.search);
   const { message, error, chats } = useSelector(state => state.chat);
+
+  const chatState = useSelector((state) => state.chat);
+  console.log(chatState)
+ 
+  // const [activeChat, setActiveChat] = useState(chat.);
 
   const accessChat = (id) => {
     dispatch(createNewChat(id))
@@ -32,10 +39,10 @@ const Chatbox = () => {
       dispatch({ type: 'clearMessage' });
     }
   }
-  const handleSearchClick = async (e) => {
-    e.preventDefault();
-    setUsername(e.target.value)
-    dispatch(searchUser(e.target.value))
+  const handleSearchClick = (e) => {
+    const newUsername = e.target.value;
+    setUsername(newUsername);
+    dispatch(searchUser(newUsername));
   }
 
   useEffect(() => {
@@ -52,8 +59,8 @@ const Chatbox = () => {
   }
 
 
-  return (
 
+  return (
     <div className="bg-white rounded-xl shadow1 " >
       <div className="px-5 pt-[6px] ">
         <div className="flex pb-4 justify-between">
@@ -116,12 +123,9 @@ const Chatbox = () => {
             ) : (chats && chats.length > 0 &&
               chats.map((chat, id) => {
                 const isLastChat = id === chats.length - 1;
-
-
-                // console.log(chats.length)
                 return (
-                  <div key={id}>
-                    <div className="flex justify-between">
+                  <div onClick={() => dispatch(updateActiveChat({ activeChat: chat }))} className={`${chatState.activeChat._id === chat._id ? "bg-[#7dcc81] rounded-lg" : ""} `} key={id}>
+                    <div className={`flex justify-between`}>
                       <div className="flex">
                         {chat.avatar && chat.avatar.url ? (
                           <Avatar size='md' src={chat.avatar.url} alt={`Avatar of ${chat.username}`} />

@@ -16,6 +16,7 @@ import Chatbox from './Chatbox'
 import { messagesGroups, messagesPeoples } from '../../utils/data'
 import { getAllPersonChats } from '../../redux/actions/chat'
 import GroupChatBox from './GroupChatBox'
+import SelectedChat from './SelectedChat'
 
 
 const Chat = () => {
@@ -141,19 +142,15 @@ const Chat = () => {
               <SearchBox search={search} setSearch={setSearch} handleSearch={handleSearch} />
             </div>
             <div>
-
-
               <Chatbox />
-
             </div>
             <div>
-              {/* <Chatbox chatype="Groups" data={searchResult.length > 0 ? searchResult : messagesGroups} /> */}
               <GroupChatBox />
             </div>
           </div>
-
         </div>
-        <div className='my-6  bg-red-600'>
+        <div className='mt-6 '>
+          <SelectedChat />
         </div>
       </div>
     </div>

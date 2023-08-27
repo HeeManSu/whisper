@@ -90,8 +90,8 @@ const GroupChatBox = () => {
                                     <div className="flex flex-col items-center">
                                         <Input
                                             required
-                                            id="username"
-                                            name="username"
+                                            id="chatName"
+                                            name="chatName"
                                             type="text"
                                             placeholder="Enter Chatname"
                                             value={chatName}

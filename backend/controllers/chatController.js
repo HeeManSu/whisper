@@ -88,9 +88,9 @@ export const createGroupChat = catchAsyncError(async (req, res, next) => {
     const { name, users } = req.body;
     const file = req.file;
 
-    console.log(name)
-    console.log(users)
-    console.log(file)
+    // console.log(name)
+    // console.log(users)
+    // console.log(file)
 
     if (!name || !users || !file) {
         return next(new errorHandlerClass("Please Enter all Fields", 400));
