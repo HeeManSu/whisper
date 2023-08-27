@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { server } from "../store";
+import errorHandlerClass from "../../../backend/utils/errorClass";
 
 
 export const createNewChat = createAsyncThunk(
@@ -36,15 +37,61 @@ export const fetchAllChats = createAsyncThunk('fetchAllChat', async () => {
     }
 })
 
+export const addToGroup = createAsyncThunk('addToGroup', async () => {
+    try {
+        const response = await axios.get(`${server}/groupadd`, {
+            withCredentials: true,
+        })
+
+        return response.data;
+    } catch (error) {
+        throw new Error(error);
+    }
+})
+
+export const createGroupChat = createAsyncThunk('createGroupChat', async (formData) => {
+    try {
+        const response = await axios.post(
+            `${server}/groupchat`,
+            formData,
+            {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            }
+        );
+        // console.log('Response:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Action Creator Error:', error);
+        throw new errorHandlerClass("unable to fetch data", 400);
+    }
+});
+
+export const fetchAllGroupChats = createAsyncThunk('fetchAllGroupChat', async () => {
+    try {
+        const response = await axios.get(`${server}/groupchat`,
+            {
+                withCredentials: true
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        throw new Error(error);
+    }
+})
+
 
 export const chatSlice = createSlice({
     name: 'chat',
     initialState: {
-        chat: null,
-        loading: false,
-        error: null,
-        message: null,
-        chats: null,
+        // chat: null,
+        // loading: false,
+        // error: null,
+        // message: null,
+        // chats: null,
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -70,6 +117,42 @@ export const chatSlice = createSlice({
                 state.chats = action.payload.chats;
             })
             .addCase(fetchAllChats.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(addToGroup.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(addToGroup.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+                state.error = null;
+            })
+            .addCase(addToGroup.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+            .addCase(createGroupChat.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(createGroupChat.fulfilled, (state, action) => {
+                state.loading = false;
+                state.newChat = action.payload.newChat;
+                state.message = action.payload.message;
+                state.error = null;
+            })
+            .addCase(createGroupChat.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+            .addCase(fetchAllGroupChats.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchAllGroupChats.fulfilled, (state, action) => {
+                state.loading = false;
+                state.groupChats = action.payload.groupChats;
+            })
+            .addCase(fetchAllGroupChats.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

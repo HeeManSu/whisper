@@ -3,17 +3,12 @@ import { createAsyncThunk, createReducer, createSlice } from "@reduxjs/toolkit";
 
 export const searchUser = createAsyncThunk('searchUsers', async (search) => {
     try {
-        // dispatch({ type: 'searchUserRequest' });
-
         const { data } = await axios.get(`${server}/searchuser`, {
-            params: { search }, // Pass the search query as a parameter
+            params: { search }, 
             withCredentials: true,
         });
-
-        // dispatch({ type: 'searchUserSuccess', payload: data.users }); // Use "data.users" for the payload
         return data.users;
     } catch (error) {
-        // dispatch({ type: 'searchUserFail', payload: error.response.data.message });
         throw new Error(error)
     }
 });

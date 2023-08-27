@@ -9,7 +9,10 @@ export const getAllPersonChats = catchAsyncError(async (req, res, next) => {
     try {
         const userId = req.user._id;
 
-        const chats = await chatModel.find({ users: userId })
+        const chats = await chatModel.find({
+            users: userId,
+            isGroupChat: false,
+        })
             .populate("users", "-password")
             .populate("groupAdmin", "-password")
             .populate("latestMessage")
@@ -38,8 +41,6 @@ export const createPersonChat = catchAsyncError(async (req, res, next) => {
     if (!secondUser) {
         return next(new errorHandlerClass("Second user not found", 400));
     }
-
-    // Check if chat already exists
     const existingChat = await chatModel.findOne({
         isGroupChat: false,
         users: { $all: [userId, secondUserId] },
@@ -59,7 +60,7 @@ export const createPersonChat = catchAsyncError(async (req, res, next) => {
     }
 
     const chatData = {
-        chatName: secondUser.name, 
+        chatName: secondUser.name,
         isGroupChat: false,
         users: [userId, secondUserId],
         avatar: {
@@ -87,15 +88,14 @@ export const createGroupChat = catchAsyncError(async (req, res, next) => {
     const { name, users } = req.body;
     const file = req.file;
 
-    // console.log(name)
-    // console.log(users)
-    // console.log(file)
+    console.log(name)
+    console.log(users)
+    console.log(file)
 
     if (!name || !users || !file) {
         return next(new errorHandlerClass("Please Enter all Fields", 400));
-        // throw error.message; 
     }
-    var parsedUsers = JSON.parse(req.body.users);
+    var parsedUsers = JSON.parse(users);
 
     if (parsedUsers.length < 2) {
         return next(new errorHandlerClass("add more than 2 users", 400));
@@ -110,11 +110,8 @@ export const createGroupChat = catchAsyncError(async (req, res, next) => {
 
     try {
         const myCloud = await cloudinary.uploader.upload(fileUri.content)
-
-
         // console.log(fileUri)
         // console.log(myCloud)
-
         const groupChat = await chatModel.create({
             chatName: name,
             users: parsedUsers,
@@ -125,14 +122,13 @@ export const createGroupChat = catchAsyncError(async (req, res, next) => {
                 url: myCloud.secure_url,
             }
         });
-        // console.log(groupChat)
-
         const fullGroupChat = await chatModel.findOne({ _id: groupChat._id })
             .populate("users", "-password")
             .populate("groupAdmin", "-password");
 
         res.status(200).json({
             success: true,
+            message: "Group chat created",
             newChat: fullGroupChat
         });
     } catch (error) {
@@ -173,7 +169,7 @@ export const addToGroup = catchAsyncError(async (req, res, next) => {
     try {
         const { chatId, userId } = req.body;
 
-        const chat = await chatModel.findById(chatId); // Get the chat details
+        const chat = await chatModel.findById(chatId);
         if (!chat) {
             return next(new errorHandlerClass("Chat does not exist", 400));
         }
@@ -184,7 +180,7 @@ export const addToGroup = catchAsyncError(async (req, res, next) => {
         }
 
         const added = await chatModel.findOneAndUpdate(
-            { _id: chatId }, // Use filter object
+            { _id: chatId },
             { $push: { users: userId } },
             { new: true }
         )
@@ -196,6 +192,7 @@ export const addToGroup = catchAsyncError(async (req, res, next) => {
         }
         res.status(200).json({
             success: true,
+            message: "user added in the group",
             added,
         });
 
@@ -203,7 +200,6 @@ export const addToGroup = catchAsyncError(async (req, res, next) => {
     } catch (error) {
         next(new errorHandlerClass("Failed to add new person to group chat", 400));
     }
-
 })
 
 
@@ -238,6 +234,30 @@ export const removeFromGroup = catchAsyncError(async (req, res, next) => {
 
     }
 })
+
+
+export const getAllGroupChats = catchAsyncError(async (req, res, next) => {
+    try {
+        const userId = req.user._id;
+
+        const groupChats = await chatModel.find({
+            users: userId,
+            isGroupChat: true,
+        })
+            .populate("users", "-password")
+            .populate("groupAdmin", "-password")
+            .populate("latestMessage")
+            .populate({ path: "latestMessage.sender", select: "name pic email" })
+            .sort({ updatedAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            groupChats,
+        });
+    } catch (error) {
+        next(new errorHandlerClass("Unable to fetch all group chats", 400));
+    }
+});
 
 
 

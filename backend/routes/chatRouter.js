@@ -1,6 +1,6 @@
 import express from "express"
 import { isAuthenticated } from "../middlewares/auth.js";
-import { addToGroup, createGroupChat, createPersonChat, getAllPersonChats, removeFromGroup, renameGroup } from "../controllers/chatController.js";
+import { addToGroup, createGroupChat, createPersonChat, getAllGroupChats, getAllPersonChats, removeFromGroup, renameGroup } from "../controllers/chatController.js";
 import singleUpload from "../middlewares/multer.js";
 
 
@@ -15,9 +15,7 @@ router.route("/personchat").post(isAuthenticated, createPersonChat);
 
 
 //Group Chat API
-router.route("/groupchat").post(isAuthenticated, singleUpload, createGroupChat).get((req, res) => {
-    res.send("This is my group chat  page")
-});
+router.route("/groupchat").post(isAuthenticated, singleUpload, createGroupChat).get(isAuthenticated, getAllGroupChats);
 router.route("/reanme").put(isAuthenticated, renameGroup);
 router.route("/groupremove").put(isAuthenticated, removeFromGroup);
 router.route("/groupadd").put(isAuthenticated, addToGroup);

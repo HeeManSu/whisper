@@ -9,6 +9,8 @@ import { searchUser } from '../../redux/actions/user';
 import { createNewChat, fetchAllChats } from "../../redux/reducers/chatSlice";
 import toast from 'react-hot-toast'
 import { useEffect } from "react";
+import Loader from "../Loader/Loader";
+
 
 
 const Chatbox = () => {
@@ -80,13 +82,17 @@ const Chatbox = () => {
                   </div>
                 </form>
                 <div className="flex flex-col pt-5">
-                  {users && users.length > 0 && username.length !== 0 && users.map((user, id) => (
+                  {users && users.length > 0 && username.length !== 0 && users.slice(0, 4).map((user, id) => (
                     <button
                       key={id}
                       onClick={() => accessChat(user._id)}
                       className="border-2 pl-4 bg-white rounded-xl flex shadow1 py-3"
                     >
-                      <Avatar size='md' src={user.avatar.url} alt={`Avatar of ${user.username}`} />
+                      {user.avatar && user.avatar.url ? (
+                        <Avatar size='md' src={user.avatar.url} alt={`Avatar of ${user.username}`} />
+                      ) : (
+                        <Avatar size='md' alt={`Avatar of ${user.username}`} />
+                      )}
                       <div className="pl-5 text-start">
                         <h1 className="text-black text-[17px]">{user.username}</h1>
                         <h1 className="text-gray-500">{user.name}</h1>
@@ -105,7 +111,9 @@ const Chatbox = () => {
         </div>
         <div>
           <div className="h-[270px] overflow-scroll scrollbar-hidden" >
-            {chats && chats.length > 0 &&
+            {loading ? (
+              <Loader />
+            ) : (chats && chats.length > 0 &&
               chats.map((chat, id) => {
                 const isLastChat = id === chats.length - 1;
 
@@ -115,7 +123,11 @@ const Chatbox = () => {
                   <div key={id}>
                     <div className="flex justify-between">
                       <div className="flex">
-                        <Avatar size='md' src={chat.avatar.url} alt={`Avatar of ${chat.username}`} />
+                        {chat.avatar && chat.avatar.url ? (
+                          <Avatar size='md' src={chat.avatar.url} alt={`Avatar of ${chat.username}`} />
+                        ) : (
+                          <Avatar size='md' alt={`Avatar of ${chat.username}`} />
+                        )}
                         <div className="pl-[14px]">
                           <h1 className="text-[18px] font-[600]" >{getSender(currentUser, chat.users)}</h1>
                           <h1 className="text-[17px]">new message</h1>
@@ -130,7 +142,7 @@ const Chatbox = () => {
                   </div>
                 )
               }
-              )}
+              ))}
           </div>
         </div>
       </div>
