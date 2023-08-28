@@ -61,8 +61,9 @@ export const createGroupChat = createAsyncThunk('createGroupChat', async (formDa
                 }
             }
         );
-        // console.log('Response:', response.data);
+        console.log('Response:', response.data);
         return response.data;
+
     } catch (error) {
         console.error('Action Creator Error:', error);
         throw new errorHandlerClass("unable to fetch data", 400);

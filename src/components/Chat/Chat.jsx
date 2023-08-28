@@ -35,17 +35,12 @@ const Chat = () => {
 
 
   useEffect(() => {
-    setActiveChat(true); // Set activeChat to true when component mounts
+    setActiveChat(true); 
   }, []);
 
 
-  // useEffect(() => {
-  //   dispatch(getAllPersonChats())
-  // }, [dispatch])
-
   const handleSearch = (event) => {
     setSearch(event.target.value)
-    // console.log(search)
   };
 
   let filteredData = [...messagesGroups, ...messagesPeoples].filter((currItem) => {

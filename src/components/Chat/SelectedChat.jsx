@@ -2,7 +2,11 @@ import { Avatar, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, 
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { UserItem } from './GroupChatBox';
+// import { UserItem } from './GroupChatBox';
+import { useDispatch } from 'react-redux';
+import { updateGroupUsers } from '../../redux/reducers/chatSlice';
+import { RxCross2 } from "react-icons/rx"
+
 
 const SelectedChat = () => {
   const activeChat = useSelector((state) => state.chat.activeChat);
@@ -76,9 +80,13 @@ const ProfileModal = ({ activeChat, isOpen, onClose }) => {
 };
 
 const GroupProfileModal = ({ activeChat, isOpen, onClose }) => {
-  // console.log(activeChat.users.length)
+
+  const dispatch = useDispatch();
+  const groupUsers = useSelector((state) => state.chat.groupUsers);
+
   const handleDeleteFunction = (userId) => {
-    // setGroupUsers(groupUsers.filter(user => user._id !== userId));
+    dispatch(updateGroupUsers({ groupUsers: groupUsers.filter((user) => user._id !== userId) }));
+
   };
 
   return (
@@ -95,7 +103,6 @@ const GroupProfileModal = ({ activeChat, isOpen, onClose }) => {
                 activeChat?.users && activeChat?.users?.length > 0 && activeChat?.users?.map((user, id) => {
                   return (
                     <UserItem user={user} deleteFunction={handleDeleteFunction} key={id} />
-
                   )
                 })
               }
@@ -111,3 +118,18 @@ const GroupProfileModal = ({ activeChat, isOpen, onClose }) => {
     </Modal>
   )
 }
+
+
+const UserItem = ({ user, deleteFunction }) => {
+  const handleDeleteClick = () => {
+    deleteFunction(user._id);
+  };
+
+  return (
+    <div className="bg-blue-600 gap-2 flex justify-center pl-[12px] pb-[5px] items-center text-white px-[8px] py-[3px] text-center rounded-full">
+      <h1>{user.name}</h1>
+      <RxCross2 className="cursor-pointer" onClick={handleDeleteClick} />
+    </div>
+  );
+}
+

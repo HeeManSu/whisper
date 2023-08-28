@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { searchUser } from '../../redux/actions/user';
 import { RxCross2 } from "react-icons/rx"
 import toast from 'react-hot-toast'
-import { createGroupChat, fetchAllGroupChats } from "../../redux/reducers/chatSlice";
+import { createGroupChat, fetchAllGroupChats, updateGroupUsers } from "../../redux/reducers/chatSlice";
 import Loader from "../Loader/Loader";
 import { updateActiveChat } from "../../redux/reducers/chatSlice"
 
@@ -16,12 +16,12 @@ const GroupChatBox = () => {
     const { isOpen: isGroupModalOpen, onClose: GroupModalClose, onOpen: GroupModalOpen } = useDisclosure();
     const [username, setUsername] = useState("");
     const [chatName, setChatName] = useState('');
-    const [groupUsers, setGroupUsers] = useState([]);
+    // const [groupUsers, setGroupUsers] = useState([]);
     const [image, setImage] = useState()
     const dispatch = useDispatch();
     const { users } = useSelector(state => state.search);
     const { message, error, groupChats, loading } = useSelector(state => state.chat);
-    // const groupUsers = useSelector((state) => state.chat.groupUsers);
+    const groupUsers = useSelector((state) => state.chat.groupUsers);
 
 
     const chatState = useSelector((state) => state.chat);
@@ -39,11 +39,12 @@ const GroupChatBox = () => {
         if (groupUsers.includes(user)) {
             return toast.success("User already added");
         }
-        setGroupUsers([...groupUsers, user]);
+        dispatch(updateGroupUsers({ groupUsers: [...groupUsers, user] }))
     }
 
     const handleDeleteFunction = (userId) => {
-        setGroupUsers(groupUsers.filter(user => user._id !== userId));
+        // setGroupUsers(groupUsers.filter(user => user._id !== userId));
+        dispatch(updateGroupUsers({ groupUsers: groupUsers.filter((user) => user._id !== userId) }));
     };
 
     const handleSearchClick = async (e) => {
@@ -59,9 +60,9 @@ const GroupChatBox = () => {
         formData.append('name', chatName);
         formData.append('file', image);
         formData.append('users', JSON.stringify(groupUsers.map((u) => u._id)));
-
-        dispatch(createGroupChat(formData));
         GroupModalClose();
+        dispatch(createGroupChat(formData));
+
         if (error) {
             toast.error(error);
             dispatch({ type: 'clearError' });
@@ -132,8 +133,6 @@ const GroupChatBox = () => {
                                                 onChange={changeImageHandler}
                                             />
                                         </div>
-
-
                                     </div>
                                 </form>
                                 <div className="flex pl-[12px] flex-wrap gap-2 mt-[9px]">
