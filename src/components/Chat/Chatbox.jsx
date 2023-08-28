@@ -59,7 +59,6 @@ const Chatbox = () => {
   }
 
 
-
   return (
     <div className="bg-white rounded-xl shadow1 " >
       <div className="px-5 pt-[6px] ">
@@ -124,7 +123,7 @@ const Chatbox = () => {
               chats.map((chat, id) => {
                 const isLastChat = id === chats.length - 1;
                 return (
-                  <div onClick={() => dispatch(updateActiveChat({ activeChat: chat }))} className={`${chatState.activeChat._id === chat._id ? "bg-[#7dcc81] rounded-lg" : ""} `} key={id}>
+                  <div onClick={() => dispatch(updateActiveChat({ activeChat: chat }))} className={`${chatState.activeChat === chat ? "bg-[#7dcc81] rounded-lg" : ""} `} key={id}>
                     <div className={`flex justify-between`}>
                       <div className="flex">
                         {chat.avatar && chat.avatar.url ? (

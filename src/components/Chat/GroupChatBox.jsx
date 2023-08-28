@@ -9,6 +9,7 @@ import { RxCross2 } from "react-icons/rx"
 import toast from 'react-hot-toast'
 import { createGroupChat, fetchAllGroupChats } from "../../redux/reducers/chatSlice";
 import Loader from "../Loader/Loader";
+import { updateActiveChat } from "../../redux/reducers/chatSlice"
 
 
 const GroupChatBox = () => {
@@ -20,6 +21,10 @@ const GroupChatBox = () => {
     const dispatch = useDispatch();
     const { users } = useSelector(state => state.search);
     const { message, error, groupChats, loading } = useSelector(state => state.chat);
+    // const groupUsers = useSelector((state) => state.chat.groupUsers);
+
+
+    const chatState = useSelector((state) => state.chat);
 
     const changeImageHandler = (e) => {
         const file = e.target.files[0];
@@ -175,7 +180,7 @@ const GroupChatBox = () => {
 
                                 // console.log(groupChats.length)
                                 return (
-                                    <div key={id}>
+                                    <div onClick={() => dispatch(updateActiveChat({ activeChat: groupChat }))} className={`${chatState.activeChat === groupChat ? "bg-[#7dcc81] rounded-lg" : ""} `} key={id}>
                                         <div className="flex justify-between">
                                             <div className="flex">
                                                 {groupChat.avatar && groupChat.avatar.url ? (
@@ -208,7 +213,7 @@ const GroupChatBox = () => {
 export default GroupChatBox
 
 
-const UserItem = ({ user, deleteFunction }) => {
+export const UserItem = ({ user, deleteFunction }) => {
     const handleDeleteClick = () => {
         deleteFunction(user._id);
     };

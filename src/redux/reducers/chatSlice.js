@@ -93,11 +93,15 @@ export const chatSlice = createSlice({
         // message: null,
         // chats: null,
         activeChat: null,
+        groupUsers: [],
     },
     reducers: {
         updateActiveChat: (state, action) => {
             return { ...state, activeChat: action.payload.activeChat };
         },
+        updateGroupUsers: (state, action) => {
+            return { ...state, groupUsers: action.payload.groupUsers }
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -107,7 +111,7 @@ export const chatSlice = createSlice({
             .addCase(createNewChat.fulfilled, (state, action) => {
                 state.loading = false;
                 state.chat = action.payload.chat;
-                state.message = action.payload.message; // Check this line
+                state.message = action.payload.message;
                 state.error = null;
             })
             .addCase(createNewChat.rejected, (state, action) => {
@@ -164,6 +168,6 @@ export const chatSlice = createSlice({
     }
 })
 
-export const { updateActiveChat } = chatSlice.actions;
+export const { updateActiveChat, updateGroupUsers } = chatSlice.actions;
 
 export default chatSlice.reducer;
