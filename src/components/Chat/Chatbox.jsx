@@ -25,7 +25,7 @@ const Chatbox = () => {
   const { message, error, chats } = useSelector(state => state.chat);
 
   const chatState = useSelector((state) => state.chat);
-  console.log(chatState)
+  // console.log(chatState)
  
   // const [activeChat, setActiveChat] = useState(chat.);
 

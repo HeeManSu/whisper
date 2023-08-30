@@ -16,7 +16,7 @@ router.route("/personchat").post(isAuthenticated, createPersonChat);
 
 //Group Chat API
 router.route("/groupchat").post(isAuthenticated, singleUpload, createGroupChat).get(isAuthenticated, getAllGroupChats);
-router.route("/reanme").put(isAuthenticated, renameGroup);
+router.route("/rename").put(isAuthenticated, renameGroup);
 router.route("/groupremove").put(isAuthenticated, removeFromGroup);
 router.route("/groupadd").put(isAuthenticated, addToGroup);
 

@@ -6,6 +6,10 @@ const chatSchema = new Schema({
         required: [true, "Please enter chat name"],
         trim: true,
     },
+    // _id: {
+    //     type: String,
+    //     required: true
+    // },
     users: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

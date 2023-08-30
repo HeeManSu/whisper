@@ -61,7 +61,7 @@ export const createGroupChat = createAsyncThunk('createGroupChat', async (formDa
                 }
             }
         );
-        console.log('Response:', response.data);
+        // console.log('Response:', response.data);
         return response.data;
 
     } catch (error) {
@@ -77,7 +77,27 @@ export const fetchAllGroupChats = createAsyncThunk('fetchAllGroupChat', async ()
                 withCredentials: true
             }
         );
+        return response.data;
+    } catch (error) {
+        throw new Error(error);
+    }
+})
 
+export const renameGroupChat = createAsyncThunk('updateGroupChat', async ({newChatName, chatId}) => {
+
+    console.log("new chat name:", newChatName)
+    console.log("chat id:", chatId)
+    try {
+        const response = await axios.put(`${server}/rename`,
+            { newChatName, chatId },
+            {
+                withCredentials: true,
+                // headers: {
+                //     'Content-Type': 'application/json',
+                // },
+            }
+        );
+        console.log( "response data:", response.data);
         return response.data;
     } catch (error) {
         throw new Error(error);
@@ -163,6 +183,18 @@ export const chatSlice = createSlice({
                 state.groupChats = action.payload.groupChats;
             })
             .addCase(fetchAllGroupChats.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(renameGroupChat.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(renameGroupChat.fulfilled, (state, action) => {
+                state.loading = false;
+                state.updatedChatName = action.payload.updatedChatName;
+                state.message = action.payload.message;
+            })
+            .addCase(renameGroupChat.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
