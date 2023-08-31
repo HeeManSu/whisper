@@ -31,9 +31,12 @@ app.use(cors({
 //importing and using routes
 import user from "./routes/userRouter.js"
 import chat from "./routes/chatRouter.js"
+import message from "./routes/messageRouter.js"
+
 
 app.use("/api/v1", user);
-app.use("/api/v1", chat)
+app.use("/api/v1", chat);
+app.use("/api/v1", message);
 
 
 

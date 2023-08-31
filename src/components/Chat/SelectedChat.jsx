@@ -4,16 +4,18 @@ import { useSelector } from 'react-redux';
 import { BsThreeDotsVertical } from "react-icons/bs";
 // import { UserItem } from './GroupChatBox';
 import { useDispatch } from 'react-redux';
-import { fetchAllGroupChats, renameGroupChat, updateGroupUsers } from '../../redux/reducers/chatSlice';
+import { addToGroup, fetchAllGroupChats, renameGroupChat, resetGroupUsers, updateGroupUsers } from '../../redux/reducers/chatSlice';
 import { RxCross2 } from "react-icons/rx"
 import { loadUser, searchUser } from '../../redux/actions/user';
 import { useRef } from 'react';
+import toast from 'react-hot-toast'
+
 
 
 const SelectedChat = () => {
   const activeChat = useSelector((state) => state.chat.activeChat);
   // console.log(activeChat);
-  const { chats } = useSelector(state => state.chat);
+
 
 
   const { isOpen: isPersonModalOpen, onClose: PersonModalClose, onOpen: PersonModalOpen } = useDisclosure();
@@ -50,7 +52,7 @@ const SelectedChat = () => {
         <div className='flex items-center h-full justify-center'>No chat selected</div>
       )}
       <ProfileModal activeChat={activeChat} isOpen={isPersonModalOpen} onClose={PersonModalClose} />
-      <GroupProfileModal activeChat={activeChat} isOpen={isGroupModalOpen} onClose={GroupModalClose} />
+      <GroupProfileModal activeChat={activeChat} isOpen={isGroupModalOpen} onOpen={isGroupModalOpen} onClose={GroupModalClose} />
     </div>
   );
 };
@@ -82,7 +84,7 @@ const ProfileModal = ({ activeChat, isOpen, onClose }) => {
   );
 };
 
-const GroupProfileModal = ({ activeChat, isOpen, onClose }) => {
+const GroupProfileModal = ({ activeChat, isOpen, onClose, onOpen }) => {
 
   const dispatch = useDispatch();
   const groupUsers = useSelector((state) => state.chat.groupUsers);
@@ -90,26 +92,35 @@ const GroupProfileModal = ({ activeChat, isOpen, onClose }) => {
   const [newChatName, setNewChatName] = useState("");
   const [newUserName, setNewUserName] = useState("");
 
-
+  const { message, error, loading } = useSelector(state => state.chat);
   const { users } = useSelector(state => state.search)
 
   const updateButtonRef = useRef(null);
 
-  useEffect(() => {
-    if (activeChat?.users) {
-      dispatch(updateGroupUsers({ groupUsers: activeChat.users }));
-    }
-  }, [isOpen])
+  // useEffect(() => {
+  //   if (activeChat?.users && JSON.stringify(activeChat.users) !== JSON.stringify(groupUsers)) {
+  //     dispatch(updateGroupUsers({ groupUsers: activeChat.users }));
+  //   }
+  // }, [activeChat?.users]);
 
   const handleDeleteFunction = (userId) => {
     dispatch(updateGroupUsers({ groupUsers: groupUsers.filter((user) => user._id !== userId) }));
   };
 
   const changeGroupNameHandler = (newChatName, chatId) => {
-    console.log(newChatName, chatId);
+    // console.log(newChatName, chatId);
     dispatch(renameGroupChat({ newChatName, chatId }));
     onClose();
     dispatch(loadUser())
+
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+    if (message) {
+      toast.success(message);
+      dispatch({ type: 'clearMessage' });
+    }
   };
 
   const handleSearchClick = (e) => {
@@ -118,8 +129,26 @@ const GroupProfileModal = ({ activeChat, isOpen, onClose }) => {
     dispatch(searchUser(newUsername));
   }
 
+  const addToGroupHandler = (chatId, userId, user) => {
+
+    dispatch(addToGroup({ chatId, userId }))
+    if (message) {
+      toast.success(message);
+      dispatch({ type: 'clearMessage' });
+    }
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+  }  
+
+  const handleCloseModal = () => {
+    dispatch(resetGroupUsers()); 
+    onClose();
+  };
+
   return (
-    <Modal size={"md"} isOpen={isOpen} onClose={onClose}>
+    <Modal scrollBehavior='inside' size={"md"} isOpen={isOpen} onClose={handleCloseModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Group Profile</ModalHeader>
@@ -136,7 +165,6 @@ const GroupProfileModal = ({ activeChat, isOpen, onClose }) => {
                 })
               }
             </div>
-
             <div className='flex justify-around mt-[10px]'>
               <Input
                 w="70%"
@@ -155,16 +183,15 @@ const GroupProfileModal = ({ activeChat, isOpen, onClose }) => {
                 }}
               />
               <Button
+                isLoading={loading}
                 ref={updateButtonRef}
                 type='button'
                 colorScheme='blue'
                 onClick={() => changeGroupNameHandler(newChatName, activeChat?._id)}
-
               >
                 Update
               </Button>
             </div>
-
             <Input
               required
               id='newUserName'
@@ -174,12 +201,11 @@ const GroupProfileModal = ({ activeChat, isOpen, onClose }) => {
               value={newUserName}
               onChange={handleSearchClick}
             />
-
             <div className="flex flex-col pt-5">
               {users && users.length > 0 && newUserName?.length !== 0 && users.slice(0, 4).map((user, id) => (
                 <button
                   key={id}
-                  // onClick={() => accessChat(user._id)}
+                  onClick={() => addToGroupHandler(activeChat._id, user._id, user)}
                   className="border-2 pl-4 bg-white rounded-xl flex shadow1 py-3"
                 >
                   {user?.avatar && user?.avatar?.url ? (
@@ -194,11 +220,10 @@ const GroupProfileModal = ({ activeChat, isOpen, onClose }) => {
                 </button>
               ))}
             </div>
-
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="blue" onClick={onClose}>
+          <Button colorScheme="blue" onClick={handleCloseModal}>
             Close
           </Button>
         </ModalFooter>

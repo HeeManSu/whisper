@@ -37,11 +37,16 @@ export const fetchAllChats = createAsyncThunk('fetchAllChat', async () => {
     }
 })
 
-export const addToGroup = createAsyncThunk('addToGroup', async () => {
+export const addToGroup = createAsyncThunk('addToGroup', async ({chatId, userId}) => {
     try {
-        const response = await axios.get(`${server}/groupadd`, {
-            withCredentials: true,
-        })
+        const response = await axios.put(`${server}/groupadd`,
+            {
+                chatId,
+                userId
+            },
+            {
+                withCredentials: true,
+            })
 
         return response.data;
     } catch (error) {
@@ -83,7 +88,7 @@ export const fetchAllGroupChats = createAsyncThunk('fetchAllGroupChat', async ()
     }
 })
 
-export const renameGroupChat = createAsyncThunk('updateGroupChat', async ({newChatName, chatId}) => {
+export const renameGroupChat = createAsyncThunk('updateGroupChat', async ({ newChatName, chatId }) => {
 
     console.log("new chat name:", newChatName)
     console.log("chat id:", chatId)
@@ -97,7 +102,7 @@ export const renameGroupChat = createAsyncThunk('updateGroupChat', async ({newCh
                 // },
             }
         );
-        console.log( "response data:", response.data);
+        console.log("response data:", response.data);
         return response.data;
     } catch (error) {
         throw new Error(error);
@@ -122,7 +127,10 @@ export const chatSlice = createSlice({
         },
         updateGroupUsers: (state, action) => {
             return { ...state, groupUsers: action.payload.groupUsers }
-        }
+        },
+        resetGroupUsers: (state) => {
+            return { ...state, groupUsers: [] };
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -201,6 +209,6 @@ export const chatSlice = createSlice({
     }
 })
 
-export const { updateActiveChat, updateGroupUsers } = chatSlice.actions;
+export const { updateActiveChat, updateGroupUsers, resetGroupUsers } = chatSlice.actions;
 
 export default chatSlice.reducer;

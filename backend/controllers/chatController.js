@@ -162,8 +162,9 @@ export const renameGroup = catchAsyncError(async (req, res, next) => {
         });
 
     } catch (error) {
+        next(new errorHandlerClass("Failed to rename group", 400));
 
-        throw new Error(error);
+        // throw new Error(error);
     }
 });
 
@@ -180,7 +181,7 @@ export const addToGroup = catchAsyncError(async (req, res, next) => {
 
         const existingUserIndex = chat.users.findIndex(user => user.toString() === userId);
         if (existingUserIndex !== -1) {
-            return next(new errorHandlerClass("User already exists in the group", 400));
+            return next(new errorHandlerClass("User already exists in the group", 200));
         }
 
         const added = await chatModel.findOneAndUpdate(
@@ -196,7 +197,7 @@ export const addToGroup = catchAsyncError(async (req, res, next) => {
         }
         res.status(200).json({
             success: true,
-            message: "user added in the group",
+            message: "user added in the group. Refresh to see changes. 😅",
             added,
         });
 
