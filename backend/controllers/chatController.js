@@ -60,7 +60,7 @@ export const createPersonChat = catchAsyncError(async (req, res, next) => {
     }
 
     const chatData = {
-        chatName: secondUser.name,
+        chatName: "sender",
         isGroupChat: false,
         users: [userId, secondUserId],
         avatar: {

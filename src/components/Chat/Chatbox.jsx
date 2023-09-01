@@ -59,6 +59,15 @@ const Chatbox = () => {
     return "";
   }
 
+  
+  function getSenderAvatar(currentUser, users) {
+    if(currentUser && currentUser._id) {
+      return users[0]._id === currentUser._id ? users[1]?.avatar?.url : users[0]?.avatar?.url;
+    }
+
+    
+  }
+
 
   return (
     <div className="bg-white rounded-xl shadow1 " >
@@ -128,7 +137,7 @@ const Chatbox = () => {
                     <div className={`flex justify-between`}>
                       <div className="flex">
                         {chat.avatar && chat.avatar.url ? (
-                          <Avatar size='md' src={chat.avatar.url} alt={`Avatar of ${chat.username}`} />
+                          <Avatar size='md' src={getSenderAvatar(currentUser, chat?.users)} alt={`Avatar of ${chat.username}`} />
                         ) : (
                           <Avatar size='md' alt={`Avatar of ${chat.username}`} />
                         )}

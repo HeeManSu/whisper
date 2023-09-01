@@ -9,18 +9,27 @@ import { RxCross2 } from "react-icons/rx"
 import { loadUser, searchUser } from '../../redux/actions/user';
 import { useRef } from 'react';
 import toast from 'react-hot-toast'
+import Loader from '../Loader/Loader';
+import { fetchAllMessages, sendMessages, setMessages } from '../../redux/reducers/messageSlice';
 
 
 
 const SelectedChat = () => {
   const activeChat = useSelector((state) => state.chat.activeChat);
-  // console.log(activeChat);
-
-
+  // console.log(activeChat)
 
   const { isOpen: isPersonModalOpen, onClose: PersonModalClose, onOpen: PersonModalOpen } = useDisclosure();
   const { isOpen: isGroupModalOpen, onClose: GroupModalClose, onOpen: GroupModalOpen } = useDisclosure();
+  const [loading, setLoading] = useState(false);
+  const [content, setcontent] = useState("");
+  const [currentUser, setCurrentUser] = useState();
 
+  const messages = useSelector((state) => state.message.messages)
+
+  const { error, allMessages } = useSelector(state => state.message);
+  // console.log(allMessages)
+
+  const dispatch = useDispatch();
 
   const handleModal = () => {
     if (activeChat && !activeChat.isGroupChat) {
@@ -30,6 +39,63 @@ const SelectedChat = () => {
     }
   };
 
+  const sendMessage = async (event) => {
+    if (event.key === 'Enter' && content) {
+      event.preventDefault();
+      const { payload } = await dispatch(sendMessages({ content, chatId: activeChat?._id }));
+      // console.log(payload)
+      setcontent("");
+      // console.log(payload?.chatMessage)
+      dispatch(setMessages({ messages: [...messages, payload?.chatMessage] }))
+    }
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+  };
+
+  const typingHandler = (e) => {
+    setcontent(e.target.value);
+  }
+
+
+  const fetchMessages = async () => {
+    if (!activeChat) {
+      return;
+    }
+    const { payload } = await dispatch(fetchAllMessages({ chatId: activeChat?._id }));
+    dispatch(setMessages({ messages: [...messages, payload?.allMessages] }))
+  }
+
+  useEffect(() => {
+    fetchMessages();
+  }, [activeChat])
+
+  useEffect(() => {
+    setCurrentUser(JSON.parse(localStorage.getItem("userInfo")));
+  }, []);
+
+  console.log(currentUser)
+
+  function getSenderName(currentUser, users) {
+    if (currentUser && currentUser._id) {
+      return users[0]._id === currentUser._id ? users[1].name : users[0].name;
+    }
+    return "";
+  }
+
+  function getSenderAvatar(currentUser, users) {
+    if(currentUser && currentUser._id) {
+      return users[0]._id === currentUser._id ? users[1]?.avatar?.url : users[0]?.avatar?.url;
+    }
+
+    
+  }
+
+
+
+
+
 
   return (
     <div className='bg-white rounded-xl shadow1 h-[97%]'>
@@ -37,8 +103,8 @@ const SelectedChat = () => {
         <div className='px-[30px] pt-[20px]'>
           <div className='flex justify-between'>
             <div className='flex cursor-pointer gap-4 items-center'>
-              <Avatar size="md" src={activeChat.avatar?.url} /> {/* Use optional chaining to handle null avatar.url */}
-              <h1 className='text-[18px] flex items-center font-[500]'>{activeChat?.chatName}</h1>
+              <Avatar size="md" src={getSenderAvatar(currentUser, activeChat?.users)} />
+              <h1 className='text-[18px] flex items-center font-[500]'>{getSenderName(currentUser, activeChat?.users)}</h1>
             </div>
             <BsThreeDotsVertical
               onClick={handleModal}
@@ -47,6 +113,28 @@ const SelectedChat = () => {
             />
           </div>
           <div className='bg-gray-400 h-[1.5px] mt-[10px]'></div>
+
+          {
+            loading ? (
+              <Loader />
+            ) : (
+              <div className='bg-blue-50 mt-[15px]'>
+                <div className='h-[73vh] w-full'>
+
+                </div>
+              </div>
+            )
+          }
+
+          <form onKeyDown={sendMessage}>
+            <Input
+              paddingY='5'
+              placeholder='Enter the message'
+              boxShadow='0px 4px 5px 2px rgba(121, 197, 239, 0.38)'
+              onChange={typingHandler}
+              value={content}
+            />
+          </form>
         </div>
       ) : (
         <div className='flex items-center h-full justify-center'>No chat selected</div>
@@ -88,7 +176,7 @@ const GroupProfileModal = ({ activeChat, isOpen, onClose, onOpen }) => {
 
   const dispatch = useDispatch();
   const groupUsers = useSelector((state) => state.chat.groupUsers);
-  console.log(groupUsers)
+  // console.log(groupUsers)
   const [newChatName, setNewChatName] = useState("");
   const [newUserName, setNewUserName] = useState("");
 
@@ -140,10 +228,10 @@ const GroupProfileModal = ({ activeChat, isOpen, onClose, onOpen }) => {
       toast.error(error);
       dispatch({ type: 'clearError' });
     }
-  }  
+  }
 
   const handleCloseModal = () => {
-    dispatch(resetGroupUsers()); 
+    dispatch(resetGroupUsers());
     onClose();
   };
 

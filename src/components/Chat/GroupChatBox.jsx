@@ -22,7 +22,7 @@ const GroupChatBox = () => {
     const { users } = useSelector(state => state.search);
     const { message, error, groupChats, loading } = useSelector(state => state.chat);
     const groupUsers = useSelector((state) => state.chat.groupUsers);
-    console.log(groupUsers);
+    // console.log(groupUsers);
 
     const chatState = useSelector((state) => state.chat);
 

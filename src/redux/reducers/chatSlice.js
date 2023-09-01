@@ -90,8 +90,8 @@ export const fetchAllGroupChats = createAsyncThunk('fetchAllGroupChat', async ()
 
 export const renameGroupChat = createAsyncThunk('updateGroupChat', async ({ newChatName, chatId }) => {
 
-    console.log("new chat name:", newChatName)
-    console.log("chat id:", chatId)
+    // console.log("new chat name:", newChatName)
+    // console.log("chat id:", chatId)
     try {
         const response = await axios.put(`${server}/rename`,
             { newChatName, chatId },
@@ -102,7 +102,7 @@ export const renameGroupChat = createAsyncThunk('updateGroupChat', async ({ newC
                 // },
             }
         );
-        console.log("response data:", response.data);
+        // console.log("response data:", response.data);
         return response.data;
     } catch (error) {
         throw new Error(error);

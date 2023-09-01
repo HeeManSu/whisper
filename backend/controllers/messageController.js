@@ -7,7 +7,6 @@ import messageModel from "../models/messageModel.js";
 
 
 export const sendMessage = catchAsyncError(async (req, res, next) => {
-
     const { content, chatId } = req.body;
 
     if (!content || !chatId) {
@@ -55,14 +54,14 @@ export const allMessages = catchAsyncError(async (req, res, next) => {
             "sender",
             "name pic email"
         )
-        .populate("chat");
+            .populate("chat");
 
         res.status(200).json({
             success: true,
             allMessages,
         });
     } catch (error) {
-
+        throw new Error(error);
     }
 
 })

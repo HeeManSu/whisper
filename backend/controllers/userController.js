@@ -47,8 +47,6 @@ export const register = catchAsyncError(async (req, res, next) => {
         },
 
     })
-
-
     //Without the jwt token . The user will not be able to use some of the protecte routes or do some particular actions.
     sendToken(res, user, "Registered Successfully", 201);
 })
@@ -58,7 +56,6 @@ export const register = catchAsyncError(async (req, res, next) => {
 export const login = catchAsyncError(async (req, res, next) => {
 
     const { username, password } = req.body;
-
 
     if (!username || !password) {
         return next(new errorHandlerClass("Please enter all field", 400))
