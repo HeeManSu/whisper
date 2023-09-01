@@ -2,7 +2,6 @@ import { Avatar, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, 
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { BsThreeDotsVertical } from "react-icons/bs";
-// import { UserItem } from './GroupChatBox';
 import { useDispatch } from 'react-redux';
 import { addToGroup, fetchAllGroupChats, renameGroupChat, resetGroupUsers, updateGroupUsers } from '../../redux/reducers/chatSlice';
 import { RxCross2 } from "react-icons/rx"
@@ -11,24 +10,19 @@ import { useRef } from 'react';
 import toast from 'react-hot-toast'
 import Loader from '../Loader/Loader';
 import { fetchAllMessages, sendMessages, setMessages } from '../../redux/reducers/messageSlice';
+import ScrollableChat from './ScrollableChat';
 
 
 
 const SelectedChat = () => {
   const activeChat = useSelector((state) => state.chat.activeChat);
-  // console.log(activeChat)
-
   const { isOpen: isPersonModalOpen, onClose: PersonModalClose, onOpen: PersonModalOpen } = useDisclosure();
   const { isOpen: isGroupModalOpen, onClose: GroupModalClose, onOpen: GroupModalOpen } = useDisclosure();
-  const [loading, setLoading] = useState(false);
+  const [sendMessageCounter, setSendMessageCounter] = useState(0);
+
   const [content, setcontent] = useState("");
   const [currentUser, setCurrentUser] = useState();
-
-  const messages = useSelector((state) => state.message.messages)
-
-  const { error, allMessages } = useSelector(state => state.message);
-  // console.log(allMessages)
-
+  const { error, allMessages, loading } = useSelector(state => state.message);
   const dispatch = useDispatch();
 
   const handleModal = () => {
@@ -43,11 +37,11 @@ const SelectedChat = () => {
     if (event.key === 'Enter' && content) {
       event.preventDefault();
       const { payload } = await dispatch(sendMessages({ content, chatId: activeChat?._id }));
-      // console.log(payload)
       setcontent("");
-      // console.log(payload?.chatMessage)
-      dispatch(setMessages({ messages: [...messages, payload?.chatMessage] }))
+      setSendMessageCounter(sendMessageCounter + 1);
     }
+
+
     if (error) {
       toast.error(error);
       dispatch({ type: 'clearError' });
@@ -58,24 +52,16 @@ const SelectedChat = () => {
     setcontent(e.target.value);
   }
 
-
-  const fetchMessages = async () => {
+  useEffect(() => {
     if (!activeChat) {
       return;
     }
-    const { payload } = await dispatch(fetchAllMessages({ chatId: activeChat?._id }));
-    dispatch(setMessages({ messages: [...messages, payload?.allMessages] }))
-  }
-
-  useEffect(() => {
-    fetchMessages();
-  }, [activeChat])
+    dispatch(fetchAllMessages({ chatId: activeChat?._id }))
+  }, [activeChat, sendMessageCounter]);
 
   useEffect(() => {
     setCurrentUser(JSON.parse(localStorage.getItem("userInfo")));
   }, []);
-
-  console.log(currentUser)
 
   function getSenderName(currentUser, users) {
     if (currentUser && currentUser._id) {
@@ -85,17 +71,10 @@ const SelectedChat = () => {
   }
 
   function getSenderAvatar(currentUser, users) {
-    if(currentUser && currentUser._id) {
+    if (currentUser && currentUser._id) {
       return users[0]._id === currentUser._id ? users[1]?.avatar?.url : users[0]?.avatar?.url;
     }
-
-    
   }
-
-
-
-
-
 
   return (
     <div className='bg-white rounded-xl shadow1 h-[97%]'>
@@ -113,19 +92,19 @@ const SelectedChat = () => {
             />
           </div>
           <div className='bg-gray-400 h-[1.5px] mt-[10px]'></div>
-
           {
             loading ? (
               <Loader />
             ) : (
               <div className='bg-blue-50 mt-[15px]'>
-                <div className='h-[73vh] w-full'>
-
+                <div className='h-[73vh] w-full hide-scrollbar' >
+                  {
+                    allMessages && <ScrollableChat />
+                  }
                 </div>
               </div>
             )
           }
-
           <form onKeyDown={sendMessage}>
             <Input
               paddingY='5'
@@ -176,7 +155,6 @@ const GroupProfileModal = ({ activeChat, isOpen, onClose, onOpen }) => {
 
   const dispatch = useDispatch();
   const groupUsers = useSelector((state) => state.chat.groupUsers);
-  // console.log(groupUsers)
   const [newChatName, setNewChatName] = useState("");
   const [newUserName, setNewUserName] = useState("");
 

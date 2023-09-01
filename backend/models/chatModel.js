@@ -6,10 +6,7 @@ const chatSchema = new Schema({
         required: [true, "Please enter chat name"],
         trim: true,
     },
-    // _id: {
-    //     type: String,
-    //     required: true
-    // },
+
     users: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -26,16 +23,6 @@ const chatSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },
-    // status: {
-    //     type: String,
-    //     //enum means it can have two options.
-    //     enum: ["seen", "unseen"],
-    //     default: "unseen",
-    // },
-    // sentTime: {
-    //     type: Date,
-    //     default: Date.now()
-    // },
     avatar: {
         public_id: {
             type: String,

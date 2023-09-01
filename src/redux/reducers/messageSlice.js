@@ -33,16 +33,15 @@ export const fetchAllMessages = createAsyncThunk('fetchMessages', async ({ chatI
 
         // console.log(data);
         return data;
-
     } catch (error) {
-        throw new errorHandlerClass("unable to fetch data", 400);
+        throw new Error("Unable to fetch data");
     }
 });
 
 
 
 export const messageSlice = createSlice({
-    name: "messaage",
+    name: "message",
     initialState: {
         messages: [],
         allMessages: [],

@@ -19,10 +19,13 @@ const Chatbox = () => {
   const [username, setUsername] = useState("");
   const [currentUser, setCurrentUser] = useState();
 
+
+
  
   const dispatch = useDispatch();
   const { users, loading } = useSelector(state => state.search);
   const { message, error, chats } = useSelector(state => state.chat);
+  
 
   const chatState = useSelector((state) => state.chat);
   // console.log(chatState)
@@ -61,6 +64,8 @@ const Chatbox = () => {
 
   
   function getSenderAvatar(currentUser, users) {
+
+    // console.log(users)
     if(currentUser && currentUser._id) {
       return users[0]._id === currentUser._id ? users[1]?.avatar?.url : users[0]?.avatar?.url;
     }

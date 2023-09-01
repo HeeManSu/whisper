@@ -21,7 +21,7 @@ export const sendMessage = catchAsyncError(async (req, res, next) => {
 
     try {
         var chatMessage = await messageModel.create(newMessage);
-        chatMessage = await messageModel.populate(chatMessage, { path: "sender", select: "name pic" });
+        chatMessage = await messageModel.populate(chatMessage, { path: "sender", select: "name pic " });
         chatMessage = await messageModel.populate(chatMessage, "chat");
         chatMessage = await messageModel.populate(chatMessage, {
             path: "chat.users",
@@ -33,7 +33,7 @@ export const sendMessage = catchAsyncError(async (req, res, next) => {
             .populate("chat")
             .populate({
                 path: "chat.users",
-                select: "name pic email",
+                select: "name pic email avatar",
             })
             .exec();
         res.status(200).json({
