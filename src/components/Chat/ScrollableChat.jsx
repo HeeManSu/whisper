@@ -6,7 +6,7 @@ import ScrollableFeed from 'react-scrollable-feed'
 
 
 const ScrollableChat = () => {
-    // const { error, allMessages, loading } = useSelector(state => state.message);
+    const { error, allMessages, loading } = useSelector(state => state.message);
     const [currentUser, setCurrentUser] = useState(null);
     const activeChat = useSelector((state) => state.chat.activeChat);
     
