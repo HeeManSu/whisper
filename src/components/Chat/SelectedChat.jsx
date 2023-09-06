@@ -183,6 +183,7 @@ const SelectedChat = () => {
     if (currentUser && currentUser._id) {
       const senderAvatar =  activeChat ? (users[0]._id === currentUser._id ? users[1]?.avatar?.url : users[0]?.avatar?.url) : "";
       return senderAvatar || Puneet
+      
     }
     return Puneet;
   }
