@@ -45,8 +45,7 @@ function App() {
         loading ? (<Loader />) : (
           <>
             <Routes>
-              <Route path='/' element={<Home />} />
-              <Route path='/login' element={
+              <Route path='/' element={
                 <ProtectedRoute
                   isAuthenticated={!isAuthenticated}
                   redirect="/chat"
