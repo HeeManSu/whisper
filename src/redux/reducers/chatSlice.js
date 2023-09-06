@@ -108,6 +108,26 @@ export const renameGroupChat = createAsyncThunk('updateGroupChat', async ({ newC
         throw new Error(error);
     }
 })
+export const removeGroupUser = createAsyncThunk('removeGroupUser', async ({ userId, chatId }) => {
+
+    // console.log("new chat name:", newChatName)
+    // console.log("chat id:", chatId)
+    try {
+        const response = await axios.put(`${server}/groupremove`,
+            { userId, chatId },
+            {
+                withCredentials: true,
+                // headers: {
+                //     'Content-Type': 'application/json',
+                // },
+            }
+        );
+        console.log("response data:", response.data);
+        return response.data;
+    } catch (error) {
+        throw new Error(error);
+    }
+})
 
 
 export const chatSlice = createSlice({
@@ -203,6 +223,18 @@ export const chatSlice = createSlice({
                 state.message = action.payload.message;
             })
             .addCase(renameGroupChat.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(removeGroupUser.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(removeGroupUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.removed = action.payload.removed;
+                state.message = action.payload.message;
+            })
+            .addCase(removeGroupUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

@@ -5,8 +5,20 @@
 
 .grid1{
     display: grid;
-    grid-template-columns: 0.25fr 0.9fr 2fr;
+    grid-template-columns: 0.25fr 1.0fr 2fr;
     column-gap: 25px;
+}
+
+.grid1 {
+    display: grid;
+    grid-template-columns: 0.25fr 1.0fr 2fr;
+    column-gap: 25px;
+}
+
+@media (max-width: 1023px) {
+    .grid1 {
+       display: block;
+    }
 }
 
 .check{
@@ -66,4 +78,12 @@
   flex-direction: column;
   overflow-y: scroll;
   scrollbar-width: none;
+}
+
+.dot {
+  height: 25px;
+  width: 25px;
+  /* background-color: #bbb; */
+  border-radius: 50%;
+  display: inline-block;
 }

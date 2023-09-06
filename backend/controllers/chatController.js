@@ -32,11 +32,14 @@ export const createPersonChat = catchAsyncError(async (req, res, next) => {
     const { secondUserId } = req.body;
     const userId = req.user._id;
 
+
+
     if (!secondUserId || !userId) {
         return next(new errorHandlerClass("Please Enter all Fields", 400));
     }
 
     const secondUser = await userModel.findById(secondUserId);
+    const firstUser = await userModel.findById(userId);
 
     if (!secondUser) {
         return next(new errorHandlerClass("Second user not found", 400));
@@ -62,7 +65,7 @@ export const createPersonChat = catchAsyncError(async (req, res, next) => {
     const chatData = {
         chatName: "sender",
         isGroupChat: false,
-        users: [userId, secondUserId],
+        users: [firstUser, secondUser],
         avatar: {
             public_id: secondUser.avatar.public_id,
             url: secondUser.avatar.url,
@@ -72,6 +75,7 @@ export const createPersonChat = catchAsyncError(async (req, res, next) => {
         const newChat = await chatModel.create(chatData);
         const fullChat = await chatModel.findOne({ _id: newChat._id }).populate("users", "-password");
 
+        console.log(fullChat);
         res.status(200).json({
             success: true,
             message: "New Chat Created successfully",
@@ -140,8 +144,8 @@ export const createGroupChat = catchAsyncError(async (req, res, next) => {
 export const renameGroup = catchAsyncError(async (req, res, next) => {
     try {
         const { newChatName, chatId, } = req.body;
-        console.log(newChatName)
-        console.log(chatId)
+        // console.log(newChatName)
+        // console.log(chatId)
         // const filter = { _id: chatId };
         const updatedChatName = await chatModel.findByIdAndUpdate(
             chatId,
@@ -220,7 +224,7 @@ export const removeFromGroup = catchAsyncError(async (req, res, next) => {
             return next(new errorHandlerClass("User not found in the group", 400));
         }
         const removed = await chatModel.findOneAndUpdate(
-            { _id: chatId }, // Use filter object
+            { _id: chatId }, 
             { $pull: { users: userId } },
             { new: true }
         )
@@ -232,11 +236,11 @@ export const removeFromGroup = catchAsyncError(async (req, res, next) => {
         }
         res.status(200).json({
             success: true,
+            message: "User removed from the group. Refresh to see changes. ✨",
             removed,
         });
     } catch (error) {
         next(new errorHandlerClass("Failed to remove person from group chat", 400));
-
     }
 })
 

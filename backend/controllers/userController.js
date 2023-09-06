@@ -54,7 +54,6 @@ export const register = catchAsyncError(async (req, res, next) => {
 
 
 export const login = catchAsyncError(async (req, res, next) => {
-
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -181,4 +180,65 @@ export const searchUser = catchAsyncError(async (req, res, next) => {
     })
 })
 
+
+export const updateprofilepicture = catchAsyncError(async (req, res, next) => {
+
+    const file = req.file;
+    const user = await userModel.findById(req.user._id);
+    const fileUri = getDataUri(file);
+    const mycloud = await cloudinary.v2.uploader.upload(fileUri.content)
+
+    await cloudinary.v2.uploader.destroy(user.avatar.public_id)
+
+    user.avatar = {
+        public_id: mycloud.public_id,
+        url: mycloud.secure_url,
+    }
+
+    await user.save();
+
+    res.status(200).json({
+        success: true,
+        message: "profile picture updated successfully",
+    })
+})
+
+
+export const changepassword = catchAsyncError(async (req, res, next) => {
+
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+        return next(new errorHandlerClass("Please enter all fields", 400))
+    }
+    const user = await userModel.findById(req.user._id).select('+password');
+
+    const isMatch = await user.comparePassword(oldPassword);
+
+    if (!isMatch) {
+        return next(new errorHandlerClass("Incorrect old password", 400));
+    }
+    user.password = newPassword;
+    await user.save();
+    res.status(200).json({
+        success: true,
+        message: "Password changed successfully",
+    })
+})
+
+export const updateProfile = catchAsyncError(async (req, res, next) => {
+
+    const { email } = req.body;
+    const user = await userModel.findById(req.user._id);
+
+    if (email) {
+        user.email = email;
+    }
+
+    await user.save();
+    res.status(200).json({
+        success: true,
+        message: "Email updated successfully",
+    })
+})
 

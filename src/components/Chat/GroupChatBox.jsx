@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton } from "@chakra-ui/react";
 import { Input, Button } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
-import { searchUser } from '../../redux/actions/user';
+import { loadUser, searchUser } from '../../redux/actions/user';
 import { RxCross2 } from "react-icons/rx"
 import toast from 'react-hot-toast'
 import { createGroupChat, fetchAllGroupChats, updateGroupUsers } from "../../redux/reducers/chatSlice";
@@ -22,7 +22,7 @@ const GroupChatBox = () => {
     const { users } = useSelector(state => state.search);
     const { message, error, groupChats, loading } = useSelector(state => state.chat);
     const groupUsers = useSelector((state) => state.chat.groupUsers);
-    // console.log(groupUsers);
+    // console.log(groupChats);
 
     const chatState = useSelector((state) => state.chat);
 
@@ -43,8 +43,10 @@ const GroupChatBox = () => {
     }
 
     const handleDeleteFunction = (userId) => {
-        // setGroupUsers(groupUsers.filter(user => user._id !== userId));
-        dispatch(updateGroupUsers({ groupUsers: groupUsers.filter((user) => user._id !== userId) }));
+        // console.log(userId); // Check if userId is logged correctly
+        const updatedGroupUsers = groupUsers.filter((user) => user._id !== userId);
+        // console.log(updatedGroupUsers); // Check the updated groupUsers array
+        dispatch(updateGroupUsers({ groupUsers: updatedGroupUsers }));
     };
 
     const handleSearchClick = async (e) => {
@@ -63,6 +65,8 @@ const GroupChatBox = () => {
         GroupModalClose();
         dispatch(createGroupChat(formData));
 
+        toast.success("New Group Chat created. Refresh to see changes 👍")
+
         if (error) {
             toast.error(error);
             dispatch({ type: 'clearError' });
@@ -72,6 +76,8 @@ const GroupChatBox = () => {
             dispatch({ type: 'clearMessage' });
         }
     }
+
+
     useEffect(() => {
         dispatch(fetchAllGroupChats());
     }, [dispatch]);
@@ -171,11 +177,15 @@ const GroupChatBox = () => {
 
                 </div>
                 <div>
-                    <div className="h-[200px] overflow-scroll scrollbar-hidden" >
+                    <div className="desktop:h-[280px]  lg:h-[180px] h-[200px] overflow-scroll scrollbar-hidden" >
                         {groupChats && groupChats.length > 0 &&
                             groupChats.map((groupChat, id) => {
                                 const isLastChat = id === groupChats.length - 1;
+                                const updatedAtDate = new Date(groupChat.updatedAt);
+                                const hours = updatedAtDate.getHours();
+                                const minutes = updatedAtDate.getMinutes();
 
+                                const formattedTime = `${hours}:${minutes}`;
 
                                 // console.log(groupChats.length)
                                 return (
@@ -189,10 +199,12 @@ const GroupChatBox = () => {
                                                 )}
                                                 <div className="pl-[14px]">
                                                     <h1 className="text-[18px] font-[600]" >{groupChat.chatName}</h1>
-                                                    <h1 className="text-[17px]">new message</h1>
+                                                    <h1 className="text-[17px] text-green-500">new message</h1>
                                                 </div>
                                             </div>
-                                            <div className="text-gray-500">Yesterday, 5:30 pm</div>
+
+
+                                            <div className="text-gray-500">{formattedTime}</div>
                                         </div>
                                         {
                                             !isLastChat && <div className="border-gray-300 max-w-[98%] mx-auto border my-[8px]"></div>
@@ -215,7 +227,9 @@ export default GroupChatBox
 export const UserItem = ({ user, deleteFunction }) => {
     const handleDeleteClick = () => {
         deleteFunction(user._id);
+
     };
+    // console.log(user)
 
     return (
         <div className="bg-blue-600  gap-2 flex justify-center pl-[12px] pb-[5px] items-center text-white px-[8px] py-[3px] text-center rounded-full">

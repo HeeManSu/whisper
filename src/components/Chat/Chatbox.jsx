@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton } from "@chakra-ui/react";
 import { Input, Button } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
-import { searchUser } from '../../redux/actions/user';
+import { loadUser, searchUser } from '../../redux/actions/user';
 import { createNewChat, fetchAllChats } from "../../redux/reducers/chatSlice";
 import toast from 'react-hot-toast'
 import { useEffect, } from "react";
@@ -19,18 +19,11 @@ const Chatbox = () => {
   const [username, setUsername] = useState("");
   const [currentUser, setCurrentUser] = useState();
 
-
-
- 
   const dispatch = useDispatch();
   const { users, loading } = useSelector(state => state.search);
   const { message, error, chats } = useSelector(state => state.chat);
-  
-
   const chatState = useSelector((state) => state.chat);
-  // console.log(chatState)
- 
-  // const [activeChat, setActiveChat] = useState(chat.);
+  // console.log(chats)
 
   const accessChat = (id) => {
     dispatch(createNewChat(id))
@@ -42,6 +35,7 @@ const Chatbox = () => {
       toast.success(message);
       dispatch({ type: 'clearMessage' });
     }
+    dispatch(loadUser())
   }
   const handleSearchClick = (e) => {
     const newUsername = e.target.value;
@@ -53,7 +47,6 @@ const Chatbox = () => {
     setCurrentUser(JSON.parse(localStorage.getItem("userInfo")));
     dispatch(fetchAllChats());
   }, []);
-  // console.log(currentUser)
 
   function getSender(currentUser, users) {
     if (currentUser && currentUser._id) {
@@ -62,17 +55,11 @@ const Chatbox = () => {
     return "";
   }
 
-  
   function getSenderAvatar(currentUser, users) {
-
-    // console.log(users)
-    if(currentUser && currentUser._id) {
+    if (currentUser && currentUser._id) {
       return users[0]._id === currentUser._id ? users[1]?.avatar?.url : users[0]?.avatar?.url;
     }
-
-    
   }
-
 
   return (
     <div className="bg-white rounded-xl shadow1 " >
@@ -131,7 +118,7 @@ const Chatbox = () => {
           </Modal>
         </div>
         <div>
-          <div className="h-[270px] overflow-scroll scrollbar-hidden" >
+          <div className="desktop:h-[250px] 2xl:h-[320px] xl:h-[270px] lg:h-[150px] h-[250px] overflow-scroll scrollbar-hidden" >
             {loading ? (
               <Loader />
             ) : (chats && chats.length > 0 &&
@@ -148,10 +135,10 @@ const Chatbox = () => {
                         )}
                         <div className="pl-[14px]">
                           <h1 className="text-[18px] font-[600]" >{getSender(currentUser, chat.users)}</h1>
-                          <h1 className="text-[17px]">new message</h1>
+                          <h1 className="text-[17px] text-green-500">new message</h1>
                         </div>
                       </div>
-                      <div className="text-gray-500">Yesterday, 5:30 pm</div>
+                      <div className="text-gray-500">5:30 pm</div>
                     </div>
                     {
                       !isLastChat && <div className="border-gray-300 max-w-[98%] mx-auto border my-[8px]"></div>

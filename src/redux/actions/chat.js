@@ -14,7 +14,6 @@ export const getAllPersonChats = (username = "") => async dispatch => {
 
         );
         // console.log(data)
-
         dispatch({ type: 'allPersonChatSuccess', payload: data.chats });
     } catch (error) {
         dispatch({ type: 'allPersonChatFail', payload: error.response.data.message });

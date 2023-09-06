@@ -45,11 +45,18 @@ export const messageSlice = createSlice({
     initialState: {
         messages: [],
         allMessages: [],
+        notifications: [],
     },
 
     reducers: {
         setMessages: (state, action) => {
             return { ...state, messages: action.payload.messages }
+        },
+        clearMessages: (state) => {
+            return { ...state, messages: [] };
+        },
+        setNotifications: (state, action) => {
+            return { ...state, notifications: action.payload.notifications }
         }
     },
     extraReducers: (builder) => {
@@ -82,6 +89,6 @@ export const messageSlice = createSlice({
 })
 
 
-export const { setMessages } = messageSlice.actions;
+export const { setMessages, clearMessages, setNotifications } = messageSlice.actions;
 
 export default messageSlice.reducer;

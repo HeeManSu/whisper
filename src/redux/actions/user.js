@@ -38,6 +38,11 @@ export const loadUser = () => async dispatch => {
                 withCredentials: true,
             }
         );
+
+        const user = data.user;
+        // console.log(user);
+
+        localStorage.setItem("userInfo", JSON.stringify(user));
         dispatch({ type: 'loadUserSuccess', payload: data.user });
     } catch (error) {
         dispatch({ type: 'loadUserFail', payload: error.response.data.message });
@@ -94,3 +99,84 @@ export const searchUser = createAsyncThunk('searchUsers', async (search) => {
         throw new Error(error)
     }
 });
+
+
+export const updateProfilePicture = formdata => async dispatch => {
+    try {
+        dispatch({ type: 'updateProfilePictureRequest' });
+        const { data } = await axios.put(
+            `${server}/updateprofilepicture`,
+            formdata,
+            {
+                headers: {
+                    'Content-type': 'multipart/form-data',
+                },
+                withCredentials: true,
+            }
+        );
+        dispatch({ type: 'updateProfilePictureSuccess', payload: data.message });
+
+    } catch (error) {
+        dispatch({
+            type: 'updateProfilePictureFail',
+            payload: error.response.data.message,
+        });
+    }
+};
+
+
+export const updateProfile = (email) => async dispatch => {
+    try {
+        dispatch({ type: 'updateProfileRequest' });
+
+        const { data } = await axios.put(
+            `${server}/updateprofile`,
+            {
+                email,
+            },
+            {
+                headers: {
+                    'Content-type': 'application/json',
+                },
+
+                withCredentials: true,
+            }
+        );
+
+        dispatch({ type: 'updateProfileSuccess', payload: data.message });
+    } catch (error) {
+        dispatch({
+            type: 'updateProfileFail',
+            payload: error.response.data.message,
+        });
+    }
+};
+
+
+export const changePassword = (oldPassword, newPassword) => async dispatch => {
+    try {
+        dispatch({ type: 'changePasswordRequest' });
+
+        const { data } = await axios.put(
+            `${server}/changepassword`,
+            {
+                oldPassword,
+                newPassword,
+            },
+            {
+                headers: {
+                    'Content-type': 'application/json',
+                },
+
+                withCredentials: true,
+            }
+        );
+
+        dispatch({ type: 'changePasswordSuccess', payload: data.message });
+    } catch (error) {
+        dispatch({
+            type: 'changePasswordFail',
+            payload: error.response.data.message,
+        });
+    }
+};
