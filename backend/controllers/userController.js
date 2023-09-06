@@ -101,7 +101,6 @@ export const forgetpassword = catchAsyncError(async (req, res, next) => {
 
     const resetToken = await user.getResetToken();
     await user.save();
-    // http://localhost:3000/resetpassword/dhfajfhdjhdkalhfjdh
     const url = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
 
     const message = `Click on the link to reset your password. ${url}. if you have not requested then please ignore.`
