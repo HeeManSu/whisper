@@ -30,7 +30,7 @@ import {
 import Puneet from "../../assets/puneet.jpg"
 
 
-const ENDPOINT = "https://whisper-backend5.vercel.app/api/v1";
+const ENDPOINT = "https://whisper-backend12.vercel.app/ap1/v1";
 var socket, activeChatCompare;
 
 const SelectedChat = () => {
