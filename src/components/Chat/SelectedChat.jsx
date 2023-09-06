@@ -14,7 +14,8 @@ import Loader from '../Loader/Loader';
 import { fetchAllMessages, sendMessages, setMessages, setNotifications } from '../../redux/reducers/messageSlice';
 import ScrollableChat from './ScrollableChat';
 import io from "socket.io-client"
-import Lottie from 'react-lottie';
+// import Lottie from 'react-lottie';
+import Lottie from 'lottie-web';
 import animationData from "../../Animations/typing.json"
 import {
   Popover,
@@ -47,15 +48,17 @@ const SelectedChat = () => {
   const { error, allMessages, loading } = useSelector(state => state.message);
   const dispatch = useDispatch();
 
+  const animationContainer = React.useRef(null);
+
   // console.log(currentUser)
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice"
-    },
-  }
+  // const defaultOptions = {
+  //   loop: true,
+  //   autoplay: true,
+  //   animationData: animationData,
+  //   rendererSettings: {
+  //     preserveAspectRatio: "xMidYMid slice"
+  //   },
+  // }
 
   // console.log(activeChat)
 
@@ -181,9 +184,9 @@ const SelectedChat = () => {
 
   const getSenderAvatar = (currentUser, users) => {
     if (currentUser && currentUser._id) {
-      const senderAvatar =  activeChat ? (users[0]._id === currentUser._id ? users[1]?.avatar?.url : users[0]?.avatar?.url) : "";
+      const senderAvatar = activeChat ? (users[0]._id === currentUser._id ? users[1]?.avatar?.url : users[0]?.avatar?.url) : "";
       return senderAvatar || Puneet
-      
+
     }
     return Puneet;
   }
@@ -195,6 +198,16 @@ const SelectedChat = () => {
       GroupModalOpen();
     }
   };
+
+  React.useEffect(() => {
+    const animation = Lottie.loadAnimation({
+      container: animationContainer.current, // Use the ref for the container
+      renderer: 'svg', // You can change the renderer as needed
+      loop: true,
+      autoplay: true,
+      animationData: animationData, // Replace with your animation data
+    })
+  });
 
   return (
     <div className='bg-white rounded-xl shadow1 xl:h-[97%] h-[94%] lg:pb-0 pb-5'>
@@ -259,17 +272,17 @@ const SelectedChat = () => {
           }
           <form onKeyDown={sendMessage}>
             {
-              isTyping ? <div className='bg-blue-50'>
-                <Lottie
+              isTyping ? <div ref={animationContainer} className='bg-blue-50'>
+                {/* <Lottie
 
-                height={35}
+                  height={35}
                   width={70}
                   style={{
                     marginBottom: 0,
                     marginLeft: 0
                   }}
                   options={defaultOptions}
-                />
+                /> */}
               </div> : (<></>)
             }
             <Input
