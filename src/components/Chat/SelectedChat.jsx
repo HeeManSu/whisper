@@ -30,7 +30,7 @@ import {
 import Puneet from "../../assets/puneet.jpg"
 
 
-const ENDPOINT = "https://whisper-backend12.vercel.app/ap1/v1";
+const ENDPOINT = "http://localhost:4002/";
 var socket, activeChatCompare;
 
 const SelectedChat = () => {
@@ -49,21 +49,6 @@ const SelectedChat = () => {
   const dispatch = useDispatch();
 
   const animationContainer = React.useRef(null);
-
-  // console.log(currentUser)
-  // const defaultOptions = {
-  //   loop: true,
-  //   autoplay: true,
-  //   animationData: animationData,
-  //   rendererSettings: {
-  //     preserveAspectRatio: "xMidYMid slice"
-  //   },
-  // }
-
-  // console.log(activeChat)
-
-
-  // console.log("selected chat active chat: ", activeChat)
 
   useEffect(() => {
     socket = io(ENDPOINT);

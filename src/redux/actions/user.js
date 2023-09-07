@@ -38,14 +38,13 @@ export const loadUser = () => async dispatch => {
                 withCredentials: true,
             }
         );
-
         const user = data.user;
-        // console.log(user);
-
         localStorage.setItem("userInfo", JSON.stringify(user));
         dispatch({ type: 'loadUserSuccess', payload: data.user });
+        console.log(data)
     } catch (error) {
-        dispatch({ type: 'loadUserFail', payload: error.response.data.message });
+        // dispatch({ type: 'loadUserFail', payload: error.response.data.message });
+        throw new Error(error)
     }
 };
 

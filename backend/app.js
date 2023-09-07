@@ -39,9 +39,6 @@ app.use("/api/v1", user);
 app.use("/api/v1", chat);
 app.use("/api/v1", message);
 
-
-
-
 export default app;
 
 app.get("/", (req, res) =>
@@ -49,7 +46,6 @@ app.get("/", (req, res) =>
         `<h1>Site is Working. click <a href=${process.env.FRONTEND_URL}>here</a> to visit frontend.</h1>`
     )
 );
-
 
 app.use(errorHandlerMiddleware);
 
