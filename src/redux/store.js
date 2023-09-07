@@ -6,7 +6,7 @@ import { messageSlice } from "./reducers/messageSlice";
 
 
 
-export const server = "https://whisper-backend5.vercel.app/api/v1";
+export const server = "http://localhost:4002/ap1/v1";
 const store = configureStore({
     reducer: {
         user: userReducer,

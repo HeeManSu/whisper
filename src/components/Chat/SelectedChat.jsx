@@ -30,7 +30,7 @@ import {
 import Puneet from "../../assets/puneet.jpg"
 
 
-const ENDPOINT = "http://localhost:4002/";
+const ENDPOINT = "http://localhost:4002/api/v1";
 var socket, activeChatCompare;
 
 const SelectedChat = () => {
